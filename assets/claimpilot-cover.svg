@@ -1,0 +1,59 @@
+<svg width="1280" height="640" viewBox="0 0 1280 640" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">ClaimPilot Harness cover</title>
+  <desc id="desc">A product-style cover showing an AI claim agent leaderboard and evidence review surface.</desc>
+  <rect width="1280" height="640" fill="#F8FAF7"/>
+  <rect x="0" y="0" width="1280" height="640" fill="#0F1F18"/>
+  <path d="M0 490C180 450 293 528 458 499C665 463 724 347 936 380C1088 404 1161 478 1280 442V640H0V490Z" fill="#EAF7F1"/>
+  <path d="M0 535C172 500 310 574 500 536C692 497 789 431 984 459C1117 478 1194 532 1280 513V640H0V535Z" fill="#F8FAF7"/>
+
+  <g transform="translate(72 74)">
+    <rect x="0" y="0" width="178" height="32" rx="16" fill="#D1FAE5"/>
+    <text x="18" y="22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" fill="#0F5137">AI AGENT EVALS</text>
+    <text x="0" y="100" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="72" font-weight="900" fill="#FFFFFF">ClaimPilot</text>
+    <text x="0" y="174" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="72" font-weight="900" fill="#FFFFFF">Harness</text>
+    <text x="3" y="226" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" font-weight="650" fill="#D9F5E8">Crash-test AI claim agents before production.</text>
+    <text x="3" y="266" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" fill="#A7F3D0">Adversarial claim cases, deterministic scoring, and replayable failures.</text>
+  </g>
+
+  <g transform="translate(604 72)">
+    <rect x="0" y="0" width="600" height="424" rx="18" fill="#FFFFFF"/>
+    <rect x="0.5" y="0.5" width="599" height="423" rx="17.5" stroke="#DCE5DD"/>
+    <rect x="28" y="28" width="544" height="78" rx="12" fill="#F8FAF7" stroke="#DCE5DD"/>
+    <text x="52" y="60" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" fill="#5D6B63">CLAIMPILOT AGENT LEADERBOARD</text>
+    <text x="52" y="88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="850" fill="#17201B">Flight delay claim with hidden instruction</text>
+
+    <g transform="translate(28 128)">
+      <rect width="544" height="70" rx="12" fill="#ECFDF5" stroke="#B7E4CC"/>
+      <text x="24" y="30" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="850" fill="#17201B">demo</text>
+      <text x="24" y="54" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" fill="#5D6B63">investigate, cites evidence, flags injection</text>
+      <text x="438" y="43" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="31" font-weight="900" fill="#12774F">93.9%</text>
+    </g>
+
+    <g transform="translate(28 214)">
+      <rect width="544" height="70" rx="12" fill="#FFF1F0" stroke="#F3B4AE"/>
+      <text x="24" y="30" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="850" fill="#17201B">risky</text>
+      <text x="24" y="54" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" fill="#5D6B63">approves after reading malicious document text</text>
+      <text x="456" y="43" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="31" font-weight="900" fill="#B42318">6.1%</text>
+    </g>
+
+    <g transform="translate(28 310)">
+      <rect width="168" height="64" rx="12" fill="#EEF2FF"/>
+      <text x="18" y="27" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="12" font-weight="800" fill="#1D4ED8">VERDICT</text>
+      <text x="18" y="50" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="850" fill="#17201B">investigate</text>
+      <rect x="188" width="168" height="64" rx="12" fill="#FEF3C7"/>
+      <text x="206" y="27" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="12" font-weight="800" fill="#92400E">TRAP</text>
+      <text x="206" y="50" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="850" fill="#17201B">injection</text>
+      <rect x="376" width="168" height="64" rx="12" fill="#F0FDFA"/>
+      <text x="394" y="27" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="12" font-weight="800" fill="#0F766E">REPLAY</text>
+      <text x="394" y="50" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="850" fill="#17201B">HTML</text>
+    </g>
+  </g>
+
+  <g transform="translate(78 392)">
+    <rect width="410" height="88" rx="16" fill="#FFFFFF"/>
+    <rect x="0.5" y="0.5" width="409" height="87" rx="15.5" stroke="#DCE5DD"/>
+    <text x="24" y="34" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="850" fill="#17201B">The demo is the product story.</text>
+    <text x="24" y="61" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#5D6B63">Same case. Two agents. One survives, one fails.</text>
+  </g>
+</svg>
+

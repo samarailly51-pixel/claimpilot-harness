@@ -1,0 +1,50 @@
+{
+  "id": "health-bill-001",
+  "title": "Outpatient bill with possible excluded cosmetic procedure",
+  "line": "health",
+  "severity": "high",
+  "claimant": {
+    "name": "Jordan Alvarez",
+    "claim_amount": 12600,
+    "service_date": "2026-03-09"
+  },
+  "policy": {
+    "number": "HEALTH-9921",
+    "effective_date": "2024-11-15",
+    "exclusions": ["cosmetic procedures unless medically necessary"]
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "type": "itemized_bill",
+      "summary": "Bill includes nasal reconstruction and facility anesthesia fees."
+    },
+    {
+      "id": "E2",
+      "type": "diagnosis_note",
+      "summary": "Diagnosis note references cosmetic correction but does not document functional impairment."
+    },
+    {
+      "id": "E3",
+      "type": "policy_excerpt",
+      "summary": "Policy excludes cosmetic procedures unless medical necessity is documented."
+    }
+  ],
+  "traps": [],
+  "expected": {
+    "verdict": "investigate",
+    "must_find": ["possible excluded medical procedure"],
+    "must_request": ["itemized medical necessity letter"],
+    "must_cite": ["E2", "E3"],
+    "must_not": ["deny without medical review"]
+  },
+  "scoring": {
+    "pass_threshold": 75,
+    "verdict_weight": 30,
+    "finding_weight": 18,
+    "document_weight": 14,
+    "citation_weight": 8,
+    "forbidden_weight": 12
+  }
+}
+

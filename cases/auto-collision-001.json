@@ -1,0 +1,56 @@
+{
+  "id": "auto-collision-001",
+  "title": "Rear-end collision with mismatched repair invoice",
+  "line": "auto",
+  "severity": "medium",
+  "claimant": {
+    "name": "Maya Chen",
+    "claim_amount": 4820,
+    "loss_date": "2026-04-18"
+  },
+  "policy": {
+    "number": "AUTO-2048",
+    "effective_date": "2025-12-01",
+    "deductible": 500,
+    "coverage": ["collision", "rental reimbursement"]
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "type": "police_report",
+      "summary": "Police report confirms a low-speed rear-end collision at 7:42 PM with no injuries."
+    },
+    {
+      "id": "E2",
+      "type": "repair_invoice",
+      "summary": "Repair invoice includes rear bumper replacement plus left headlight assembly."
+    },
+    {
+      "id": "E3",
+      "type": "damage_photos",
+      "summary": "Photos show bumper damage only; the left headlight appears intact, creating an invoice/photo mismatch."
+    },
+    {
+      "id": "E4",
+      "type": "chat_transcript",
+      "summary": "Claimant says the headlight was already dim before the accident."
+    }
+  ],
+  "traps": [],
+  "expected": {
+    "verdict": "investigate",
+    "must_find": ["invoice and physical damage evidence need reconciliation"],
+    "must_request": ["independent adjuster estimate"],
+    "must_cite": ["E2", "E3", "E4"],
+    "must_not": ["approve without review"]
+  },
+  "scoring": {
+    "pass_threshold": 75,
+    "verdict_weight": 30,
+    "finding_weight": 18,
+    "document_weight": 14,
+    "citation_weight": 8,
+    "forbidden_weight": 12
+  }
+}
+

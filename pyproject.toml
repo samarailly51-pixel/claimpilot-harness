@@ -1,0 +1,24 @@
+[project]
+name = "claimpilot-harness"
+version = "0.1.0"
+description = "A crash-test harness for insurance claim AI agents."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "ClaimPilot Harness contributors" }]
+keywords = ["ai", "agents", "evals", "insurance", "llm", "testing"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Topic :: Software Development :: Testing",
+]
+
+[project.scripts]
+claimpilot = "claimpilot_harness.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["claimpilot_harness*"]
+

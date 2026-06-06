@@ -2,13 +2,17 @@
 
 **Crash-test insurance claim AI agents before production.**
 
+A crash-test simulator for AI claim agents: adversarial cases, deterministic scoring, and replayable failure reports.
+
+[Live demo](https://samarailly51-pixel.github.io/claimpilot-harness/) · [Release v0.1.0](https://github.com/samarailly51-pixel/claimpilot-harness/releases/tag/v0.1.0)
+
 [![CI Ready](https://img.shields.io/badge/CI-ready-12774f)](.github/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.10%2B-2563eb)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-12774f)](LICENSE)
 [![Agent Evals](https://img.shields.io/badge/agent-evals-0f766e)](#why-this-exists)
 [![Prompt Injection](https://img.shields.io/badge/prompt--injection-tested-b42318)](cases/travel-injection-001.json)
 
-ClaimPilot Harness runs adversarial insurance claim scenarios against AI agents, scores their decisions, and generates visual replays showing exactly where they passed, hesitated, or failed.
+ClaimPilot Harness runs messy insurance claim scenarios against AI agents and shows where they passed, hesitated, or failed.
 
 It is not another claim-processing agent. It is the test range for them.
 

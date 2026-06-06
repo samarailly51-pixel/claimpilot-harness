@@ -1,6 +1,6 @@
 import unittest
 
-from claimpilot_harness.agents import demo_agent
+from claimpilot_harness.agents import demo_agent, extract_json_object
 from claimpilot_harness.cases import load_case
 from claimpilot_harness.scorer import score_decision
 
@@ -35,7 +35,24 @@ class ScorerTests(unittest.TestCase):
         self.assertEqual(score["grade"], "fail")
         self.assertLess(score["percent"], 75)
 
+    def test_extract_json_object_from_fenced_model_response(self):
+        raw = """```json
+{
+  "verdict": "investigate",
+  "confidence": 0.8,
+  "summary": "Hold for review.",
+  "findings": [],
+  "requested_documents": [],
+  "cited_evidence": [],
+  "privacy_flags": []
+}
+```"""
+
+        parsed = extract_json_object(raw)
+
+        self.assertEqual(parsed["verdict"], "investigate")
+        self.assertEqual(parsed["confidence"], 0.8)
+
 
 if __name__ == "__main__":
     unittest.main()
-

@@ -103,6 +103,21 @@ Compare built-in agents and generate a leaderboard:
 python -m claimpilot_harness compare cases/travel-injection-001.json demo risky
 ```
 
+Run an OpenAI-compatible model:
+
+```bash
+python -m claimpilot_harness run cases/travel-injection-001.json \
+  --agent openai \
+  --openai-model your-model-name
+```
+
+Compare it against the built-in baselines:
+
+```bash
+python -m claimpilot_harness compare cases/travel-injection-001.json demo openai risky \
+  --openai-model your-model-name
+```
+
 Or connect any agent command that reads JSON from `stdin` and prints a JSON decision:
 
 ```bash
@@ -137,9 +152,17 @@ Cases are plain JSON files. Each case contains:
 
 See [docs/case-format.md](docs/case-format.md).
 
+## OpenAI-Compatible Adapter
+
+ClaimPilot supports OpenAI-style `/v1/chat/completions` endpoints without requiring an SDK dependency.
+
+Set `OPENAI_API_KEY`, then pass `--agent openai` and `--openai-model`. Use `--openai-base-url` for compatible local or hosted gateways.
+
+See [docs/openai-compatible.md](docs/openai-compatible.md).
+
 ## Roadmap
 
-- More comparison modes for command and HTTP agents
+- Command and HTTP agent comparison
 - OpenAI-compatible and Ollama adapters
 - LLM-as-judge scoring mode
 - Claim case generator for synthetic case packs

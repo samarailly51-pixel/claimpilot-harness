@@ -5,6 +5,7 @@
 - Offline CLI runner
 - Built-in demo agent
 - Built-in risky baseline agent
+- OpenAI-compatible chat completions adapter
 - JSON case format
 - Deterministic scoring
 - Standalone HTML replay
@@ -13,7 +14,6 @@
 
 ## v0.2
 
-- OpenAI-compatible adapter
 - Ollama adapter
 - Case pack validation command
 - Command and HTTP agent comparison

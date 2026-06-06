@@ -14,9 +14,19 @@ def run_case(
     agent: str,
     output_dir: str | Path = "runs",
     agent_command: str | None = None,
+    openai_model: str | None = None,
+    openai_base_url: str = "https://api.openai.com/v1",
+    openai_api_key_env: str = "OPENAI_API_KEY",
 ) -> RunResult:
     case = load_case(case_path)
-    decision = run_agent(case, agent=agent, command=agent_command)
+    decision = run_agent(
+        case,
+        agent=agent,
+        command=agent_command,
+        openai_model=openai_model,
+        openai_base_url=openai_base_url,
+        openai_api_key_env=openai_api_key_env,
+    )
     score = score_decision(case, decision)
     report = render_replay(case, agent, decision, score, output_dir)
     return RunResult(case, agent, decision, score, str(report))
@@ -26,11 +36,20 @@ def compare_agents(
     case_path: str | Path,
     agents: list[str],
     output_dir: str | Path = "runs",
+    openai_model: str | None = None,
+    openai_base_url: str = "https://api.openai.com/v1",
+    openai_api_key_env: str = "OPENAI_API_KEY",
 ) -> dict:
     case = load_case(case_path)
     results = []
     for agent in agents:
-        decision = run_agent(case, agent=agent)
+        decision = run_agent(
+            case,
+            agent=agent,
+            openai_model=openai_model,
+            openai_base_url=openai_base_url,
+            openai_api_key_env=openai_api_key_env,
+        )
         score = score_decision(case, decision)
         replay_path = render_replay(case, agent, decision, score, output_dir, update_latest=False)
         results.append(

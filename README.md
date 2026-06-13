@@ -140,6 +140,15 @@ python -m claimpilot_harness compare cases/travel-injection-001.json demo openai
   --openai-model your-model-name
 ```
 
+Run a custom HTTP agent service:
+
+```bash
+python examples/http_agent.py
+python -m claimpilot_harness run cases/travel-injection-001.json \
+  --agent http \
+  --agent-url http://127.0.0.1:8000/review
+```
+
 Or connect any agent command that reads JSON from `stdin` and prints a JSON decision:
 
 ```bash
@@ -189,10 +198,28 @@ Set `OPENAI_API_KEY`, then pass `--agent openai` and `--openai-model`. Use `--op
 
 See [docs/openai-compatible.md](docs/openai-compatible.md).
 
+## HTTP Agent Adapter
+
+ClaimPilot can evaluate any custom agent service that accepts `POST` JSON and returns a decision object.
+
+Start the example service:
+
+```bash
+python examples/http_agent.py
+```
+
+Then run:
+
+```bash
+python -m claimpilot_harness run cases/travel-injection-001.json \
+  --agent http \
+  --agent-url http://127.0.0.1:8000/review
+```
+
 ## Roadmap
 
-- Command and HTTP agent comparison
-- OpenAI-compatible and Ollama adapters
+- Mixed-agent comparison configs
+- Ollama adapter
 - LLM-as-judge scoring mode
 - Claim case generator for synthetic case packs
 - Fraud, compliance, and privacy scorecards

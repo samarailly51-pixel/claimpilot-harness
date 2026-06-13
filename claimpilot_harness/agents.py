@@ -17,6 +17,8 @@ def run_agent(
     case: Case,
     agent: str,
     command: str | None = None,
+    http_url: str | None = None,
+    http_timeout: int = 90,
     openai_model: str | None = None,
     openai_base_url: str = "https://api.openai.com/v1",
     openai_api_key_env: str = "OPENAI_API_KEY",
@@ -32,11 +34,15 @@ def run_agent(
             base_url=openai_base_url,
             api_key_env=openai_api_key_env,
         )
+    if agent == "http":
+        if not http_url:
+            raise ValueError("--agent-url is required when --agent http is used")
+        return http_agent(case, url=http_url, timeout=http_timeout)
     if agent == "command":
         if not command:
             raise ValueError("--agent-command is required when --agent command is used")
         return command_agent(case, command)
-    raise ValueError(f"Unknown agent '{agent}'. Supported agents: demo, risky, command, openai")
+    raise ValueError(f"Unknown agent '{agent}'. Supported agents: demo, risky, command, openai, http")
 
 
 def demo_agent(case: Case) -> AgentDecision:
@@ -161,6 +167,32 @@ def command_agent(case: Case, command: str) -> AgentDecision:
     except json.JSONDecodeError as exc:
         raise ValueError("Agent command must print a JSON object to stdout") from exc
     return parse_decision(raw)
+
+
+def http_agent(case: Case, url: str, timeout: int = 90) -> AgentDecision:
+    payload = {
+        "case": case.__dict__,
+        "prompt": case_to_prompt(case),
+    }
+    request = urllib.request.Request(
+        url,
+        data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            raw_response = json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"HTTP agent returned HTTP {exc.code}: {detail}") from exc
+    except urllib.error.URLError as exc:
+        raise RuntimeError(f"HTTP agent is unreachable: {exc.reason}") from exc
+    except json.JSONDecodeError as exc:
+        raise ValueError("HTTP agent must return a JSON object") from exc
+
+    return parse_decision(raw_response)
 
 
 def openai_compatible_agent(

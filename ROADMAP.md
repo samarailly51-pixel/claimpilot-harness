@@ -6,6 +6,7 @@
 - Built-in demo agent
 - Built-in risky baseline agent
 - OpenAI-compatible chat completions adapter
+- HTTP agent adapter
 - JSON case format
 - Deterministic scoring
 - Standalone HTML replay
@@ -16,7 +17,7 @@
 
 - Ollama adapter
 - Case pack validation command
-- Command and HTTP agent comparison
+- Mixed-agent comparison configs
 
 ## v0.3
 

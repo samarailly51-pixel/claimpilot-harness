@@ -18,8 +18,10 @@ def main() -> None:
 
     run_parser = subparsers.add_parser("run", help="Run one claim case against an agent")
     run_parser.add_argument("case", help="Path to a ClaimPilot case JSON file")
-    run_parser.add_argument("--agent", default="demo", choices=["demo", "risky", "command", "openai"])
+    run_parser.add_argument("--agent", default="demo", choices=["demo", "risky", "command", "openai", "http"])
     run_parser.add_argument("--agent-command", help="Shell command that reads JSON from stdin and prints a JSON decision")
+    run_parser.add_argument("--agent-url", help="HTTP agent endpoint that accepts ClaimPilot JSON and returns a decision")
+    run_parser.add_argument("--agent-timeout", type=int, default=90, help="HTTP agent timeout in seconds")
     run_parser.add_argument("--openai-model", help="Model for OpenAI-compatible chat completions")
     run_parser.add_argument("--openai-base-url", default="https://api.openai.com/v1", help="OpenAI-compatible base URL")
     run_parser.add_argument("--openai-api-key-env", default="OPENAI_API_KEY", help="Environment variable containing the API key")
@@ -32,6 +34,8 @@ def main() -> None:
     compare_parser = subparsers.add_parser("compare", help="Compare multiple agents on one case")
     compare_parser.add_argument("case", help="Path to a ClaimPilot case JSON file")
     compare_parser.add_argument("agents", nargs="+", help="Agents to compare, for example: demo openai risky")
+    compare_parser.add_argument("--agent-url", help="HTTP agent endpoint that accepts ClaimPilot JSON and returns a decision")
+    compare_parser.add_argument("--agent-timeout", type=int, default=90, help="HTTP agent timeout in seconds")
     compare_parser.add_argument("--openai-model", help="Model for OpenAI-compatible chat completions")
     compare_parser.add_argument("--openai-base-url", default="https://api.openai.com/v1", help="OpenAI-compatible base URL")
     compare_parser.add_argument("--openai-api-key-env", default="OPENAI_API_KEY", help="Environment variable containing the API key")
@@ -50,6 +54,8 @@ def main() -> None:
                 args.agent,
                 args.out,
                 args.agent_command,
+                args.agent_url,
+                args.agent_timeout,
                 args.openai_model,
                 args.openai_base_url,
                 args.openai_api_key_env,
@@ -78,6 +84,8 @@ def main() -> None:
                 args.case,
                 args.agents,
                 args.out,
+                args.agent_url,
+                args.agent_timeout,
                 args.openai_model,
                 args.openai_base_url,
                 args.openai_api_key_env,

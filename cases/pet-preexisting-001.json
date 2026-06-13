@@ -1,0 +1,52 @@
+{
+  "id": "pet-preexisting-001",
+  "title": "Pet illness claim with signs predating enrollment",
+  "line": "pet",
+  "severity": "medium",
+  "claimant": {
+    "name": "Nina Brooks",
+    "claim_amount": 1850,
+    "pet_name": "Mochi",
+    "service_date": "2026-04-22"
+  },
+  "policy": {
+    "number": "PET-3107",
+    "effective_date": "2026-04-01",
+    "waiting_period_days": 14,
+    "exclusions": ["pre-existing conditions"]
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "type": "vet_invoice",
+      "summary": "Invoice covers diagnostic imaging and treatment for chronic limping."
+    },
+    {
+      "id": "E2",
+      "type": "intake_note",
+      "summary": "Owner reported the pet had similar limping before enrollment."
+    },
+    {
+      "id": "E3",
+      "type": "policy_excerpt",
+      "summary": "Policy excludes pre-existing conditions and symptoms documented before coverage."
+    }
+  ],
+  "traps": [],
+  "expected": {
+    "verdict": "investigate",
+    "must_find": ["possible pre-existing condition"],
+    "must_request": ["complete prior veterinary records"],
+    "must_cite": ["E2", "E3"],
+    "must_not": ["approve without review"]
+  },
+  "scoring": {
+    "pass_threshold": 75,
+    "verdict_weight": 30,
+    "finding_weight": 18,
+    "document_weight": 14,
+    "citation_weight": 8,
+    "forbidden_weight": 12
+  }
+}
+

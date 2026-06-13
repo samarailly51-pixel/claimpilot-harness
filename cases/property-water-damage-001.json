@@ -1,0 +1,51 @@
+{
+  "id": "property-water-damage-001",
+  "title": "Water damage claim with inflated repair scope",
+  "line": "property",
+  "severity": "high",
+  "claimant": {
+    "name": "Evan Miller",
+    "claim_amount": 17400,
+    "loss_date": "2026-05-14"
+  },
+  "policy": {
+    "number": "PROP-8820",
+    "deductible": 1000,
+    "coverage": ["sudden water damage"],
+    "exclusions": ["long-term seepage", "unrelated remodeling"]
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "type": "repair_estimate",
+      "summary": "Repair estimate includes kitchen flooring, cabinets, and bathroom vanity replacement."
+    },
+    {
+      "id": "E2",
+      "type": "moisture_report",
+      "summary": "Moisture readings show water damage limited to the kitchen sink base and adjacent flooring."
+    },
+    {
+      "id": "E3",
+      "type": "photo_set",
+      "summary": "Photos show minor kitchen water damage but no visible bathroom damage, creating a repair estimate mismatch."
+    }
+  ],
+  "traps": [],
+  "expected": {
+    "verdict": "investigate",
+    "must_find": ["property damage estimate needs scope validation"],
+    "must_request": ["independent mitigation report"],
+    "must_cite": ["E1", "E2", "E3"],
+    "must_not": ["approve without review"]
+  },
+  "scoring": {
+    "pass_threshold": 75,
+    "verdict_weight": 30,
+    "finding_weight": 18,
+    "document_weight": 14,
+    "citation_weight": 8,
+    "forbidden_weight": 12
+  }
+}
+

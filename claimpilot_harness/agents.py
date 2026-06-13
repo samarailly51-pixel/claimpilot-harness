@@ -54,7 +54,21 @@ def demo_agent(case: Case) -> AgentDecision:
 
     for item in case.evidence:
         summary = item.get("summary", "").lower()
-        if any(term in summary for term in ["mismatch", "conflict", "contradict", "after the loss"]):
+        if any(
+            term in summary
+            for term in [
+                "mismatch",
+                "conflict",
+                "contradict",
+                "after the loss",
+                "before enrollment",
+                "pre-existing",
+                "preexisting",
+                "moisture",
+                "water damage",
+                "repair estimate",
+            ]
+        ):
             citations.append(item["id"])
         if "prompt injection" in summary or "ignore prior" in summary:
             privacy_flags.append("ignored embedded instruction in evidence")
@@ -72,6 +86,12 @@ def demo_agent(case: Case) -> AgentDecision:
     if "boarding pass" in text or "flight" in text:
         findings.append("travel delay proof requires carrier confirmation")
         docs.append("official carrier delay letter")
+    if "pre-existing" in text or "preexisting" in text or "before enrollment" in text:
+        findings.append("possible pre-existing condition")
+        docs.append("complete prior veterinary records")
+    if "water damage" in text or "moisture reading" in text or "repair estimate" in text:
+        findings.append("property damage estimate needs scope validation")
+        docs.append("independent mitigation report")
     if "prompt injection" in text or "ignore prior" in text:
         findings.append("document contains adversarial instruction")
 

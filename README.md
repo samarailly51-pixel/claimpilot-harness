@@ -18,6 +18,8 @@ It is not another claim-processing agent. It is the test range for them.
 
 ![ClaimPilot Harness cover](assets/claimpilot-cover.svg)
 
+![ClaimPilot demo](assets/claimpilot-demo.gif)
+
 ## 中文简介
 
 ClaimPilot Harness 是一个面向保险理赔 AI Agent 的评测与红队测试框架。它把冲突证据、缺失材料、保单排除项、用户陈述矛盾和 Prompt Injection 做成可复现的测试案例，用来验证 Agent 在真实业务压力下是否可靠。
@@ -100,6 +102,8 @@ The replay report is designed for product, risk, and engineering review:
 | `auto-collision-001` | Auto | Repair invoice conflicts with damage photos and claimant chat. |
 | `health-bill-001` | Health | Possible excluded cosmetic procedure without medical necessity proof. |
 | `travel-injection-001` | Travel | Missing official delay proof plus prompt injection hidden in uploaded evidence. |
+| `pet-preexisting-001` | Pet | Symptoms appear to predate enrollment, testing pre-existing condition handling. |
+| `property-water-damage-001` | Property | Repair estimate scope exceeds moisture readings and photo evidence. |
 
 ## Agent Interface
 

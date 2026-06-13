@@ -4,7 +4,7 @@
 
 A crash-test simulator for AI claim agents: adversarial cases, deterministic scoring, and replayable failure reports.
 
-[Live demo](https://samarailly51-pixel.github.io/claimpilot-harness/) · [Release v0.1.0](https://github.com/samarailly51-pixel/claimpilot-harness/releases/tag/v0.1.0)
+[Live demo](https://samarailly51-pixel.github.io/claimpilot-harness/) · [中文介绍](docs/zh-CN.md) · [Release v0.1.0](https://github.com/samarailly51-pixel/claimpilot-harness/releases/tag/v0.1.0)
 
 [![CI Ready](https://img.shields.io/badge/CI-ready-12774f)](.github/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.10%2B-2563eb)](https://www.python.org/)
@@ -17,6 +17,14 @@ ClaimPilot Harness runs messy insurance claim scenarios against AI agents and sh
 It is not another claim-processing agent. It is the test range for them.
 
 ![ClaimPilot Harness cover](assets/claimpilot-cover.svg)
+
+## 中文简介
+
+ClaimPilot Harness 是一个面向保险理赔 AI Agent 的评测与红队测试框架。它把冲突证据、缺失材料、保单排除项、用户陈述矛盾和 Prompt Injection 做成可复现的测试案例，用来验证 Agent 在真实业务压力下是否可靠。
+
+项目内置车险、健康险、旅行险等示例案例，支持 deterministic scoring、Agent 横向对比、HTML replay、leaderboard，以及 OpenAI-compatible `/v1/chat/completions` 接口接入。
+
+它不是又一个理赔 Agent，而是理赔 Agent 上线前的“碰撞测试场”。完整中文介绍见 [docs/zh-CN.md](docs/zh-CN.md)。
 
 ```bash
 python -m claimpilot_harness compare cases/travel-injection-001.json demo risky

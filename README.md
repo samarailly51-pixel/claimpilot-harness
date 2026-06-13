@@ -119,6 +119,12 @@ Compare built-in agents and generate a leaderboard:
 python -m claimpilot_harness compare cases/travel-injection-001.json demo risky
 ```
 
+Validate case packs before running or contributing them:
+
+```bash
+python -m claimpilot_harness validate cases
+```
+
 Run an OpenAI-compatible model:
 
 ```bash
@@ -167,6 +173,13 @@ Cases are plain JSON files. Each case contains:
 - A weighted scoring rubric
 
 See [docs/case-format.md](docs/case-format.md).
+
+Validate a case file or an entire case directory:
+
+```bash
+python -m claimpilot_harness validate cases
+python -m claimpilot_harness validate cases/travel-injection-001.json --json
+```
 
 ## OpenAI-Compatible Adapter
 

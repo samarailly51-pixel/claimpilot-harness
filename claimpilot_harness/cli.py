@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 from .runner import compare_agents, run_case
+from .validator import validate_path, validation_summary
 
 
 def main() -> None:
@@ -36,6 +37,10 @@ def main() -> None:
     compare_parser.add_argument("--openai-api-key-env", default="OPENAI_API_KEY", help="Environment variable containing the API key")
     compare_parser.add_argument("--out", default="runs", help="Directory for leaderboard and replay reports")
     compare_parser.add_argument("--json", action="store_true", help="Print machine-readable comparison result")
+
+    validate_parser = subparsers.add_parser("validate", help="Validate case file schema")
+    validate_parser.add_argument("path", help="Case JSON file or directory of case files")
+    validate_parser.add_argument("--json", action="store_true", help="Print machine-readable validation result")
 
     args = parser.parse_args()
     try:
@@ -101,6 +106,21 @@ def main() -> None:
                 print("------------ -------- ------------")
                 for item in payload["results"]:
                     print(f"{item['agent']:<12} {item['score']:>5}%   {item['verdict']}")
+        elif args.command == "validate":
+            results = validate_path(args.path)
+            summary = validation_summary(results)
+            if args.json:
+                print(json.dumps(summary, ensure_ascii=False, indent=2))
+            else:
+                for item in results:
+                    status = "PASS" if item.ok else "FAIL"
+                    print(f"{status} {item.path}")
+                    for error in item.errors:
+                        print(f"  - {error}")
+                print("")
+                print(f"Validated {summary['total']} case file(s): {summary['passed']} passed, {summary['failed']} failed")
+            if not summary["ok"]:
+                raise SystemExit(1)
     except (RuntimeError, ValueError) as exc:
         print(f"claimpilot: error: {exc}", file=sys.stderr)
         raise SystemExit(2) from exc

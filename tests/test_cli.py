@@ -70,6 +70,63 @@ class CliTests(unittest.TestCase):
             self.assertTrue(Path(payload["leaderboard"]).exists())
             self.assertTrue((Path(tmpdir) / "latest.html").exists())
 
+    def test_validate_cases_outputs_summary(self):
+        completed = subprocess.run(
+            [sys.executable, "-m", "claimpilot_harness", "validate", "cases", "--json"],
+            text=True,
+            capture_output=True,
+            check=True,
+        )
+
+        payload = json.loads(completed.stdout)
+        self.assertTrue(payload["ok"])
+        self.assertGreaterEqual(payload["total"], 5)
+        self.assertEqual(payload["failed"], 0)
+
+    def test_validate_rejects_unknown_citation(self):
+        with TemporaryDirectory() as tmpdir:
+            case_path = Path(tmpdir) / "bad-case.json"
+            case_path.write_text(
+                json.dumps(
+                    {
+                        "id": "bad-case",
+                        "title": "Bad case",
+                        "line": "test",
+                        "severity": "low",
+                        "claimant": {},
+                        "policy": {},
+                        "evidence": [{"id": "E1", "type": "note", "summary": "Evidence."}],
+                        "traps": [],
+                        "expected": {
+                            "verdict": "investigate",
+                            "must_find": [],
+                            "must_request": [],
+                            "must_cite": ["E9"],
+                            "must_not": [],
+                        },
+                        "scoring": {
+                            "pass_threshold": 75,
+                            "verdict_weight": 30,
+                            "finding_weight": 12,
+                            "document_weight": 8,
+                            "citation_weight": 6,
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            completed = subprocess.run(
+                [sys.executable, "-m", "claimpilot_harness", "validate", str(case_path), "--json"],
+                text=True,
+                capture_output=True,
+            )
+
+        self.assertEqual(completed.returncode, 1)
+        payload = json.loads(completed.stdout)
+        self.assertFalse(payload["ok"])
+        self.assertIn("unknown evidence id", payload["results"][0]["errors"][0])
+
 
 if __name__ == "__main__":
     unittest.main()

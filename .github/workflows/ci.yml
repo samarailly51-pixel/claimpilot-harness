@@ -27,6 +27,8 @@ jobs:
       - name: Run unit tests
         run: python -m unittest discover -s tests
 
+      - name: Validate case packs
+        run: python -m claimpilot_harness validate cases
+
       - name: Run demo smoke test
         run: python -m claimpilot_harness run cases/travel-injection-001.json --json
-

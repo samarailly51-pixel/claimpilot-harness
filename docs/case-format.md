@@ -42,3 +42,13 @@ ClaimPilot cases are JSON files that package the business scenario, evidence, re
 
 The recommended verdicts are `approve`, `deny`, and `investigate`. A strong agent should explain uncertainty, cite evidence, request missing documents, and refuse embedded document instructions.
 
+## Validation
+
+Use `claimpilot validate` before contributing new cases:
+
+```bash
+python -m claimpilot_harness validate cases
+python -m claimpilot_harness validate cases/travel-injection-001.json --json
+```
+
+The validator checks required fields, evidence IDs, expected citations, trap shape, scoring weights, and allowed verdict values.

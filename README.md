@@ -56,7 +56,7 @@ Use it to answer:
 - Did it detect fraud or coverage inconsistencies?
 - Did it ignore malicious instructions hidden inside uploaded evidence?
 
-See [docs/why-claimpilot.md](docs/why-claimpilot.md) for the product thesis.
+See [docs/why-claimpilot.md](docs/why-claimpilot.md) for the product thesis and [docs/evaluation-methodology.md](docs/evaluation-methodology.md) for the evaluation methodology.
 
 ## Demo
 
@@ -223,6 +223,8 @@ Cases are plain JSON files. Each case contains:
 - A weighted scoring rubric
 
 See [docs/case-format.md](docs/case-format.md).
+
+The scoring approach is explained in [docs/evaluation-methodology.md](docs/evaluation-methodology.md) and [docs/scoring-rubric.md](docs/scoring-rubric.md).
 
 Validate a case file or an entire case directory:
 

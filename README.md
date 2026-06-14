@@ -166,6 +166,13 @@ Run a full case-pack regression suite:
 python -m claimpilot_harness suite cases --agents demo risky
 ```
 
+The suite writes both an HTML report and a machine-readable benchmark artifact:
+
+```txt
+runs/suite-report.html
+runs/suite-results.json
+```
+
 Refresh the static GitHub Pages demo locally:
 
 ```bash

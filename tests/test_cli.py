@@ -177,7 +177,12 @@ class CliTests(unittest.TestCase):
             self.assertGreaterEqual(payload["total_cases"], 5)
             self.assertEqual(payload["agents"][0]["agent"], "demo")
             self.assertGreater(payload["agents"][0]["average_score"], payload["agents"][1]["average_score"])
-            self.assertTrue(Path(payload["report"]).exists())
+            self.assertTrue(Path(payload["results_file"]).exists())
+            results_file = Path(tmpdir) / "suite-results.json"
+            self.assertTrue(results_file.exists())
+            artifact = json.loads(results_file.read_text(encoding="utf-8"))
+            self.assertEqual(artifact["report"], "suite-report.html")
+            self.assertTrue(artifact["results"][0]["replay"].endswith("-replay.html"))
             self.assertTrue((Path(tmpdir) / "latest.html").exists())
 
 

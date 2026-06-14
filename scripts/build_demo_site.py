@@ -28,6 +28,7 @@ def main() -> None:
 
     print(f"Built demo site in {DEMO_DIR}")
     print(f"Suite report: {suite['report']}")
+    print(f"Suite results: {suite['results_file']}")
     for agent in suite["agents"]:
         print(
             f"{agent['agent']}: average={agent['average_score']}%, "

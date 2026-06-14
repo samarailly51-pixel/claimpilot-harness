@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -52,12 +53,20 @@ def run_suite(
             )
 
     agents_summary = summarize_agents(rows, agents)
-    report_path = render_suite_report(rows, agents_summary, output_dir)
-    return {
+    out_dir = Path(output_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    report_path = render_suite_report(rows, agents_summary, out_dir)
+    results_path = out_dir / "suite-results.json"
+    payload = {
         "total_cases": len(case_paths),
         "agents": agents_summary,
-        "results": rows,
-        "report": str(report_path),
+        "results": compact_results(rows, out_dir),
+        "report": artifact_path(report_path, out_dir),
+    }
+    results_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    return {
+        **payload,
+        "results_file": str(results_path),
     }
 
 
@@ -86,3 +95,29 @@ def summarize_agents(rows: list[dict[str, Any]], agents: list[str]) -> list[dict
             }
         )
     return sorted(summary, key=lambda item: item["average_score"], reverse=True)
+
+
+def compact_results(rows: list[dict[str, Any]], base_dir: Path) -> list[dict[str, Any]]:
+    return [
+        {
+            "case_id": item["case_id"],
+            "case_title": item["case_title"],
+            "line": item["line"],
+            "severity": item["severity"],
+            "agent": item["agent"],
+            "verdict": item["verdict"],
+            "score": item["score"]["percent"],
+            "grade": item["score"]["grade"],
+            "earned": item["score"]["earned"],
+            "total": item["score"]["total"],
+            "replay": artifact_path(Path(item["replay"]), base_dir),
+        }
+        for item in rows
+    ]
+
+
+def artifact_path(path: Path, base_dir: Path) -> str:
+    try:
+        return path.resolve().relative_to(base_dir.resolve()).as_posix()
+    except ValueError:
+        return str(path)

@@ -170,25 +170,15 @@ def main() -> None:
                 "total_cases": suite["total_cases"],
                 "agents": suite["agents"],
                 "report": suite["report"],
-                "results": [
-                    {
-                        "case_id": item["case_id"],
-                        "agent": item["agent"],
-                        "line": item["line"],
-                        "severity": item["severity"],
-                        "verdict": item["verdict"],
-                        "score": item["score"]["percent"],
-                        "grade": item["score"]["grade"],
-                        "replay": item["replay"],
-                    }
-                    for item in suite["results"]
-                ],
+                "results_file": suite["results_file"],
+                "results": suite["results"],
             }
             if args.json:
                 print(json.dumps(payload, ensure_ascii=False, indent=2))
             else:
                 print(f"Cases:  {payload['total_cases']}")
                 print(f"Report: {payload['report']}")
+                print(f"JSON:   {payload['results_file']}")
                 print("")
                 print("Agent        Avg Score  Pass Rate")
                 print("------------ ---------- ----------")

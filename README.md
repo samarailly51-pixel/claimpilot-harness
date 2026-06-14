@@ -24,7 +24,7 @@ It is not another claim-processing agent. It is the test range for them.
 
 ClaimPilot Harness 是一个面向保险理赔 AI Agent 的评测与红队测试框架。它把冲突证据、缺失材料、保单排除项、用户陈述矛盾和 Prompt Injection 做成可复现的测试案例，用来验证 Agent 在真实业务压力下是否可靠。
 
-项目内置车险、健康险、旅行险等示例案例，支持 deterministic scoring、Agent 横向对比、HTML replay、leaderboard，以及 OpenAI-compatible `/v1/chat/completions` 接口接入。
+项目内置车险、健康险、旅行险、宠物险和财产险等示例案例，支持 deterministic scoring、case coverage catalog、Agent 横向对比、HTML replay、leaderboard，以及 OpenAI-compatible `/v1/chat/completions` 和 HTTP Agent 接口接入。
 
 它不是又一个理赔 Agent，而是理赔 Agent 上线前的“碰撞测试场”。完整中文介绍见 [docs/zh-CN.md](docs/zh-CN.md)。
 
@@ -105,6 +105,19 @@ The replay report is designed for product, risk, and engineering review:
 | `pet-preexisting-001` | Pet | Symptoms appear to predate enrollment, testing pre-existing condition handling. |
 | `property-water-damage-001` | Property | Repair estimate scope exceeds moisture readings and photo evidence. |
 
+Generate a coverage catalog for the case pack:
+
+```bash
+python -m claimpilot_harness catalog cases
+```
+
+```txt
+Cases: 5
+Lines: auto=1, health=1, pet=1, property=1, travel=1
+Severities: critical=1, high=2, medium=2
+Traps: prompt_injection=1
+```
+
 ## Agent Interface
 
 Use the built-in demo agent:
@@ -123,6 +136,12 @@ Validate case packs before running or contributing them:
 
 ```bash
 python -m claimpilot_harness validate cases
+```
+
+Summarize case-pack coverage:
+
+```bash
+python -m claimpilot_harness catalog cases --markdown
 ```
 
 Run an OpenAI-compatible model:

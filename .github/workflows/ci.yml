@@ -30,5 +30,8 @@ jobs:
       - name: Validate case packs
         run: python -m claimpilot_harness validate cases
 
+      - name: Check case catalog
+        run: python -m claimpilot_harness catalog cases --json
+
       - name: Run demo smoke test
         run: python -m claimpilot_harness run cases/travel-injection-001.json --json

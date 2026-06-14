@@ -7,6 +7,7 @@
 - Built-in risky baseline agent
 - OpenAI-compatible chat completions adapter
 - HTTP agent adapter
+- Case coverage catalog
 - JSON case format
 - Deterministic scoring
 - Standalone HTML replay

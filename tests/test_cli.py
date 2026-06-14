@@ -127,6 +127,31 @@ class CliTests(unittest.TestCase):
         self.assertFalse(payload["ok"])
         self.assertIn("unknown evidence id", payload["results"][0]["errors"][0])
 
+    def test_catalog_outputs_coverage_json(self):
+        completed = subprocess.run(
+            [sys.executable, "-m", "claimpilot_harness", "catalog", "cases", "--json"],
+            text=True,
+            capture_output=True,
+            check=True,
+        )
+
+        payload = json.loads(completed.stdout)
+        self.assertGreaterEqual(payload["total_cases"], 5)
+        self.assertIn("auto", payload["lines"])
+        self.assertIn("travel", payload["lines"])
+        self.assertIn("prompt_injection", payload["traps"])
+
+    def test_catalog_outputs_markdown_table(self):
+        completed = subprocess.run(
+            [sys.executable, "-m", "claimpilot_harness", "catalog", "cases", "--markdown"],
+            text=True,
+            capture_output=True,
+            check=True,
+        )
+
+        self.assertIn("| Case | Line | Severity | Expected Verdict | Traps |", completed.stdout)
+        self.assertIn("`travel-injection-001`", completed.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

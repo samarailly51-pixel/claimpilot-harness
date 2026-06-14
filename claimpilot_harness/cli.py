@@ -5,6 +5,7 @@ import json
 import sys
 from pathlib import Path
 
+from .catalog import build_catalog, format_catalog_markdown, format_catalog_text
 from .runner import compare_agents, run_case
 from .validator import validate_path, validation_summary
 
@@ -45,6 +46,11 @@ def main() -> None:
     validate_parser = subparsers.add_parser("validate", help="Validate case file schema")
     validate_parser.add_argument("path", help="Case JSON file or directory of case files")
     validate_parser.add_argument("--json", action="store_true", help="Print machine-readable validation result")
+
+    catalog_parser = subparsers.add_parser("catalog", help="Summarize case-pack coverage")
+    catalog_parser.add_argument("path", nargs="?", default="cases", help="Case JSON file or directory of case files")
+    catalog_parser.add_argument("--json", action="store_true", help="Print machine-readable catalog")
+    catalog_parser.add_argument("--markdown", action="store_true", help="Print a Markdown coverage table")
 
     args = parser.parse_args()
     try:
@@ -129,6 +135,14 @@ def main() -> None:
                 print(f"Validated {summary['total']} case file(s): {summary['passed']} passed, {summary['failed']} failed")
             if not summary["ok"]:
                 raise SystemExit(1)
+        elif args.command == "catalog":
+            catalog = build_catalog(args.path)
+            if args.json:
+                print(json.dumps(catalog, ensure_ascii=False, indent=2))
+            elif args.markdown:
+                print(format_catalog_markdown(catalog))
+            else:
+                print(format_catalog_text(catalog))
     except (RuntimeError, ValueError) as exc:
         print(f"claimpilot: error: {exc}", file=sys.stderr)
         raise SystemExit(2) from exc

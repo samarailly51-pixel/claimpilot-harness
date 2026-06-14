@@ -166,6 +166,12 @@ Run a full case-pack regression suite:
 python -m claimpilot_harness suite cases --agents demo risky
 ```
 
+Refresh the static GitHub Pages demo locally:
+
+```bash
+python scripts/build_demo_site.py
+```
+
 Run an OpenAI-compatible model:
 
 ```bash

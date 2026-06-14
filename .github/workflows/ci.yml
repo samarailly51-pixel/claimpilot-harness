@@ -36,5 +36,8 @@ jobs:
       - name: Run suite smoke test
         run: python -m claimpilot_harness suite cases --agents demo risky --json
 
+      - name: Build demo site
+        run: python scripts/build_demo_site.py
+
       - name: Run demo smoke test
         run: python -m claimpilot_harness run cases/travel-injection-001.json --json

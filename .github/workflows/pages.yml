@@ -24,6 +24,14 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build demo site
+        run: python scripts/build_demo_site.py
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:

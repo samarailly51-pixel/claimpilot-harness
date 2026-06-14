@@ -38,6 +38,17 @@ def render_leaderboard(case: Case, results: list[dict], output_dir: str | Path) 
     return path
 
 
+def render_suite_report(rows: list[dict], agents_summary: list[dict], output_dir: str | Path) -> Path:
+    out_dir = Path(output_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    html_doc = build_suite_html(rows, agents_summary)
+    path = out_dir / "suite-report.html"
+    path.write_text(html_doc, encoding="utf-8")
+    latest = out_dir / "latest.html"
+    latest.write_text(html_doc, encoding="utf-8")
+    return path
+
+
 def build_html(case: Case, agent_name: str, decision: AgentDecision, score: dict) -> str:
     evidence = "\n".join(render_evidence(item, decision.cited_evidence) for item in case.evidence)
     checks = "\n".join(render_check(item) for item in score["checks"])
@@ -189,6 +200,153 @@ def build_html(case: Case, agent_name: str, decision: AgentDecision, score: dict
 </body>
 </html>
 """
+
+
+def build_suite_html(rows: list[dict], agents_summary: list[dict]) -> str:
+    generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    total_cases = len({row["case_id"] for row in rows})
+    total_runs = len(rows)
+    top = agents_summary[0] if agents_summary else {"agent": "none", "average_score": 0, "pass_rate": 0}
+    summary_cards = "\n".join(render_suite_agent_card(item) for item in agents_summary)
+    result_rows = "\n".join(render_suite_result_row(item) for item in rows)
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ClaimPilot Suite Report</title>
+  <style>
+    :root {{
+      --ink: #17201b;
+      --muted: #5d6b63;
+      --line: #dce5dd;
+      --paper: #f8faf7;
+      --panel: #ffffff;
+      --good: #12774f;
+      --bad: #b42318;
+      --accent: #2563eb;
+    }}
+    * {{ box-sizing: border-box; }}
+    body {{
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }}
+    header {{
+      padding: 44px clamp(20px, 5vw, 72px) 34px;
+      background: #0f1f18;
+      color: white;
+      border-bottom: 5px solid #7dd3fc;
+    }}
+    .eyebrow {{ color: #a7f3d0; font-size: 13px; text-transform: uppercase; font-weight: 800; }}
+    h1 {{ margin: 8px 0; font-size: clamp(30px, 4vw, 56px); line-height: 1.02; letter-spacing: 0; }}
+    .subtitle {{ max-width: 940px; color: #d9f5e8; font-size: 17px; line-height: 1.55; }}
+    main {{ padding: 28px clamp(20px, 5vw, 72px) 56px; }}
+    .metrics {{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }}
+    section, .metric {{
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      box-shadow: 0 10px 24px rgba(19, 31, 25, 0.05);
+      margin-bottom: 18px;
+    }}
+    .label {{ color: var(--muted); font-size: 13px; }}
+    .big {{ font-size: 34px; font-weight: 850; margin-top: 7px; }}
+    .cards {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }}
+    .agent-card {{ border: 1px solid var(--line); border-radius: 8px; padding: 16px; background: #fbfdfb; }}
+    .score {{ font-size: 38px; font-weight: 850; color: var(--good); }}
+    .bar {{ height: 10px; background: #e9efe9; border-radius: 999px; overflow: hidden; margin: 10px 0; }}
+    .bar > div {{ height: 100%; background: var(--accent); }}
+    table {{ width: 100%; border-collapse: collapse; }}
+    th, td {{ text-align: left; padding: 13px 10px; border-top: 1px solid var(--line); vertical-align: top; }}
+    th {{ color: var(--muted); font-size: 13px; }}
+    .pill {{
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: #edf7f2;
+      color: #13543a;
+      font-size: 13px;
+      font-weight: 800;
+    }}
+    .fail {{ background: #fff1f0; color: var(--bad); }}
+    a {{ color: var(--accent); font-weight: 700; text-decoration: none; }}
+    @media (max-width: 800px) {{
+      .metrics {{ grid-template-columns: 1fr; }}
+      table, thead, tbody, tr, th, td {{ display: block; }}
+      th {{ display: none; }}
+      td {{ border-top: 0; padding: 6px 0; }}
+      tr {{ border-top: 1px solid var(--line); padding: 12px 0; display: block; }}
+    }}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="eyebrow">ClaimPilot Regression Suite</div>
+    <h1>Agent readiness across the full claim case pack</h1>
+    <div class="subtitle">Ran {total_runs} evaluations across {total_cases} claim cases. Generated {esc(generated_at)}.</div>
+  </header>
+  <main>
+    <div class="metrics">
+      <div class="metric"><div class="label">Top Agent</div><div class="big">{esc(top["agent"])}</div></div>
+      <div class="metric"><div class="label">Top Average</div><div class="big">{top["average_score"]}%</div></div>
+      <div class="metric"><div class="label">Top Pass Rate</div><div class="big">{top["pass_rate"]}%</div></div>
+      <div class="metric"><div class="label">Total Runs</div><div class="big">{total_runs}</div></div>
+    </div>
+    <section>
+      <h2>Agent Summary</h2>
+      <div class="cards">{summary_cards}</div>
+    </section>
+    <section>
+      <h2>Case Results</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Case</th>
+            <th>Line</th>
+            <th>Severity</th>
+            <th>Agent</th>
+            <th>Score</th>
+            <th>Verdict</th>
+            <th>Replay</th>
+          </tr>
+        </thead>
+        <tbody>{result_rows}</tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>
+"""
+
+
+def render_suite_agent_card(item: dict) -> str:
+    width = max(0, min(100, item["average_score"]))
+    return f"""<div class="agent-card">
+  <h3>{esc(item["agent"])}</h3>
+  <div class="score">{item["average_score"]}%</div>
+  <div class="bar"><div style="width: {width}%"></div></div>
+  <div class="label">Pass rate {item["pass_rate"]}% · {item["passed"]} passed · {item["failed"]} failed</div>
+</div>"""
+
+
+def render_suite_result_row(item: dict) -> str:
+    grade_class = "" if item["score"]["grade"] == "pass" else " fail"
+    replay_name = Path(item["replay"]).name
+    return f"""<tr>
+  <td><strong>{esc(item["case_id"])}</strong><br><span class="label">{esc(item["case_title"])}</span></td>
+  <td>{esc(item["line"])}</td>
+  <td>{esc(item["severity"])}</td>
+  <td>{esc(item["agent"])}</td>
+  <td><span class="pill{grade_class}">{item["score"]["percent"]}% {esc(item["score"]["grade"])}</span></td>
+  <td>{esc(item["verdict"])}</td>
+  <td><a href="{esc(replay_name)}">open replay</a></td>
+</tr>"""
 
 
 def build_leaderboard_html(case: Case, results: list[dict]) -> str:

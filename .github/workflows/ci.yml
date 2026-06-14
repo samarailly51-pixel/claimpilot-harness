@@ -33,5 +33,8 @@ jobs:
       - name: Check case catalog
         run: python -m claimpilot_harness catalog cases --json
 
+      - name: Run suite smoke test
+        run: python -m claimpilot_harness suite cases --agents demo risky --json
+
       - name: Run demo smoke test
         run: python -m claimpilot_harness run cases/travel-injection-001.json --json

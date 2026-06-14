@@ -7,6 +7,7 @@ from pathlib import Path
 
 from .catalog import build_catalog, format_catalog_markdown, format_catalog_text
 from .runner import compare_agents, run_case
+from .suite import run_suite
 from .validator import validate_path, validation_summary
 
 
@@ -51,6 +52,17 @@ def main() -> None:
     catalog_parser.add_argument("path", nargs="?", default="cases", help="Case JSON file or directory of case files")
     catalog_parser.add_argument("--json", action="store_true", help="Print machine-readable catalog")
     catalog_parser.add_argument("--markdown", action="store_true", help="Print a Markdown coverage table")
+
+    suite_parser = subparsers.add_parser("suite", help="Run multiple cases against multiple agents")
+    suite_parser.add_argument("cases", nargs="?", default="cases", help="Case JSON file or directory of case files")
+    suite_parser.add_argument("--agents", nargs="+", default=["demo", "risky"], help="Agents to evaluate")
+    suite_parser.add_argument("--agent-url", help="HTTP agent endpoint that accepts ClaimPilot JSON and returns a decision")
+    suite_parser.add_argument("--agent-timeout", type=int, default=90, help="HTTP agent timeout in seconds")
+    suite_parser.add_argument("--openai-model", help="Model for OpenAI-compatible chat completions")
+    suite_parser.add_argument("--openai-base-url", default="https://api.openai.com/v1", help="OpenAI-compatible base URL")
+    suite_parser.add_argument("--openai-api-key-env", default="OPENAI_API_KEY", help="Environment variable containing the API key")
+    suite_parser.add_argument("--out", default="runs", help="Directory for suite reports and replay reports")
+    suite_parser.add_argument("--json", action="store_true", help="Print machine-readable suite result")
 
     args = parser.parse_args()
     try:
@@ -143,6 +155,45 @@ def main() -> None:
                 print(format_catalog_markdown(catalog))
             else:
                 print(format_catalog_text(catalog))
+        elif args.command == "suite":
+            suite = run_suite(
+                args.cases,
+                args.agents,
+                args.out,
+                args.agent_url,
+                args.agent_timeout,
+                args.openai_model,
+                args.openai_base_url,
+                args.openai_api_key_env,
+            )
+            payload = {
+                "total_cases": suite["total_cases"],
+                "agents": suite["agents"],
+                "report": suite["report"],
+                "results": [
+                    {
+                        "case_id": item["case_id"],
+                        "agent": item["agent"],
+                        "line": item["line"],
+                        "severity": item["severity"],
+                        "verdict": item["verdict"],
+                        "score": item["score"]["percent"],
+                        "grade": item["score"]["grade"],
+                        "replay": item["replay"],
+                    }
+                    for item in suite["results"]
+                ],
+            }
+            if args.json:
+                print(json.dumps(payload, ensure_ascii=False, indent=2))
+            else:
+                print(f"Cases:  {payload['total_cases']}")
+                print(f"Report: {payload['report']}")
+                print("")
+                print("Agent        Avg Score  Pass Rate")
+                print("------------ ---------- ----------")
+                for item in payload["agents"]:
+                    print(f"{item['agent']:<12} {item['average_score']:>8}% {item['pass_rate']:>9}%")
     except (RuntimeError, ValueError) as exc:
         print(f"claimpilot: error: {exc}", file=sys.stderr)
         raise SystemExit(2) from exc

@@ -84,6 +84,22 @@ Open `runs/latest.html` to view the leaderboard.
 
 ![ClaimPilot leaderboard preview](assets/leaderboard-preview.svg)
 
+Run the full regression suite across all included cases:
+
+```bash
+python -m claimpilot_harness suite cases --agents demo risky
+```
+
+```txt
+Cases:  5
+Report: runs/suite-report.html
+
+Agent        Avg Score  Pass Rate
+------------ ---------- ----------
+demo             92.0%     100.0%
+risky            13.1%       0.0%
+```
+
 ## What A Replay Shows
 
 The replay report is designed for product, risk, and engineering review:
@@ -142,6 +158,12 @@ Summarize case-pack coverage:
 
 ```bash
 python -m claimpilot_harness catalog cases --markdown
+```
+
+Run a full case-pack regression suite:
+
+```bash
+python -m claimpilot_harness suite cases --agents demo risky
 ```
 
 Run an OpenAI-compatible model:

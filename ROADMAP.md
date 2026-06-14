@@ -10,6 +10,7 @@
 - Case coverage catalog
 - JSON case format
 - Deterministic scoring
+- Regression suite reports
 - Standalone HTML replay
 - Agent comparison leaderboard
 - Auto, health, and travel case packs

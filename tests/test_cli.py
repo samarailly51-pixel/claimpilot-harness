@@ -152,6 +152,34 @@ class CliTests(unittest.TestCase):
         self.assertIn("| Case | Line | Severity | Expected Verdict | Traps |", completed.stdout)
         self.assertIn("`travel-injection-001`", completed.stdout)
 
+    def test_suite_outputs_agent_summary_and_report(self):
+        with TemporaryDirectory() as tmpdir:
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "claimpilot_harness",
+                    "suite",
+                    "cases",
+                    "--agents",
+                    "demo",
+                    "risky",
+                    "--json",
+                    "--out",
+                    tmpdir,
+                ],
+                text=True,
+                capture_output=True,
+                check=True,
+            )
+
+            payload = json.loads(completed.stdout)
+            self.assertGreaterEqual(payload["total_cases"], 5)
+            self.assertEqual(payload["agents"][0]["agent"], "demo")
+            self.assertGreater(payload["agents"][0]["average_score"], payload["agents"][1]["average_score"])
+            self.assertTrue(Path(payload["report"]).exists())
+            self.assertTrue((Path(tmpdir) / "latest.html").exists())
+
 
 if __name__ == "__main__":
     unittest.main()

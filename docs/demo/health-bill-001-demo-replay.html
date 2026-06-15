@@ -96,12 +96,12 @@
   <header>
     <div class="eyebrow">ClaimPilot Harness Replay</div>
     <h1>Outpatient bill with possible excluded cosmetic procedure</h1>
-    <div class="subtitle">Agent <strong>demo</strong> reviewed case <strong>health-bill-001</strong>. Generated 2026-06-14 17:30:47.</div>
+    <div class="subtitle">Agent <strong>demo</strong> reviewed case <strong>health-bill-001</strong>. Generated 2026-06-15 10:35:49.</div>
   </header>
   <main class="grid">
     <div class="metric span-4">
       <div class="label">Harness Score</div>
-      <div class="score">82.2%</div>
+      <div class="score">91.1%</div>
       <span class="pill">PASS</span>
     </div>
     <div class="metric span-4">
@@ -126,8 +126,8 @@
   <div class="label">diagnosis_note</div>
   <div>Diagnosis note references cosmetic correction but does not document functional impairment.</div>
 </div>
-<div class="evidence">
-  <strong>E3</strong> 
+<div class="evidence cited">
+  <strong>E3</strong>  <span class="pill verdict">cited</span>
   <div class="label">policy_excerpt</div>
   <div>Policy excludes cosmetic procedures unless medical necessity is documented.</div>
 </div>
@@ -165,8 +165,8 @@
   <div>8 pts</div>
 </div>
 <div class="check">
-  <strong class="fail">FAIL</strong>
-  <div><strong>citation: E3</strong><br><span class="label">evidence not cited</span></div>
+  <strong class="pass">PASS</strong>
+  <div><strong>citation: E3</strong><br><span class="label">evidence cited</span></div>
   <div>8 pts</div>
 </div>
 <div class="check">
@@ -187,7 +187,9 @@
   &quot;requested_documents&quot;: [
     &quot;itemized medical necessity letter&quot;
   ],
-  &quot;cited_evidence&quot;: [],
+  &quot;cited_evidence&quot;: [
+    &quot;E3&quot;
+  ],
   &quot;privacy_flags&quot;: []
 }</pre>
     </section>

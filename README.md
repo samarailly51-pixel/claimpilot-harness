@@ -4,7 +4,7 @@
 
 A crash-test simulator for AI claim agents: adversarial cases, deterministic scoring, and replayable failure reports.
 
-[Live demo](https://samarailly51-pixel.github.io/claimpilot-harness/) · [中文介绍](docs/zh-CN.md) · [Release v0.1.0](https://github.com/samarailly51-pixel/claimpilot-harness/releases/tag/v0.1.0)
+[Live demo](https://samarailly51-pixel.github.io/claimpilot-harness/) · [Connect real agents](docs/connect-real-agents.md) · [中文介绍](docs/zh-CN.md) · [Release v0.1.0](https://github.com/samarailly51-pixel/claimpilot-harness/releases/tag/v0.1.0)
 
 [![CI Ready](https://img.shields.io/badge/CI-ready-12774f)](.github/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.10%2B-2563eb)](https://www.python.org/)
@@ -91,13 +91,13 @@ python -m claimpilot_harness suite cases --agents demo risky
 ```
 
 ```txt
-Cases:  5
+Cases:  6
 Report: runs/suite-report.html
 
 Agent        Avg Score  Pass Rate
 ------------ ---------- ----------
-demo             92.0%     100.0%
-risky            13.1%       0.0%
+demo             94.8%     100.0%
+risky            13.2%       0.0%
 ```
 
 ## What A Replay Shows
@@ -117,6 +117,7 @@ The replay report is designed for product, risk, and engineering review:
 | --- | --- | --- |
 | `auto-collision-001` | Auto | Repair invoice conflicts with damage photos and claimant chat. |
 | `health-bill-001` | Health | Possible excluded cosmetic procedure without medical necessity proof. |
+| `medical-privacy-injection-001` | Health | Medical necessity ambiguity plus privacy lure and hidden prompt injection. |
 | `travel-injection-001` | Travel | Missing official delay proof plus prompt injection hidden in uploaded evidence. |
 | `pet-preexisting-001` | Pet | Symptoms appear to predate enrollment, testing pre-existing condition handling. |
 | `property-water-damage-001` | Property | Repair estimate scope exceeds moisture readings and photo evidence. |
@@ -128,10 +129,10 @@ python -m claimpilot_harness catalog cases
 ```
 
 ```txt
-Cases: 5
-Lines: auto=1, health=1, pet=1, property=1, travel=1
-Severities: critical=1, high=2, medium=2
-Traps: prompt_injection=1
+Cases: 6
+Lines: auto=1, health=2, pet=1, property=1, travel=1
+Severities: critical=2, high=2, medium=2
+Traps: privacy_lure=1, prompt_injection=2
 ```
 
 ## Agent Interface
@@ -254,6 +255,8 @@ Set `OPENAI_API_KEY`, then pass `--agent openai` and `--openai-model`. Use `--op
 
 See [docs/openai-compatible.md](docs/openai-compatible.md).
 
+For end-to-end examples, see [docs/connect-real-agents.md](docs/connect-real-agents.md).
+
 ## HTTP Agent Adapter
 
 ClaimPilot can evaluate any custom agent service that accepts `POST` JSON and returns a decision object.
@@ -287,6 +290,10 @@ python -m claimpilot_harness run cases/travel-injection-001.json \
 ClaimPilot Harness is built for the gap between AI agent demos and production systems. A claim agent that can answer one happy-path question is easy to build. A claim agent that survives conflicting evidence, policy constraints, missing documents, and adversarial uploads needs a harness.
 
 That is the product surface this project explores.
+
+## Sharing
+
+For natural launch copy and short project notes, see [docs/launch-notes.md](docs/launch-notes.md).
 
 ## License
 

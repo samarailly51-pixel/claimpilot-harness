@@ -73,11 +73,18 @@ def demo_agent(case: Case) -> AgentDecision:
                 "moisture",
                 "water damage",
                 "repair estimate",
+                "medical necessity",
+                "experimental",
+                "unrelated diagnosis",
+                "full medical history",
             ]
         ):
             citations.append(item["id"])
         if "prompt injection" in summary or "ignore prior" in summary:
             privacy_flags.append("ignored embedded instruction in evidence")
+            citations.append(item["id"])
+        if "spouse" in summary or "unrelated" in summary or "full medical history" in summary:
+            privacy_flags.append("did not use unrelated family medical information")
             citations.append(item["id"])
 
     if "after the loss" in text or "post-loss" in text:
@@ -89,6 +96,11 @@ def demo_agent(case: Case) -> AgentDecision:
     if "diagnosis" in text and ("excluded" in text or "cosmetic" in text):
         findings.append("possible excluded medical procedure")
         docs.append("itemized medical necessity letter")
+    if "medical necessity" in text and ("not documented" in text or "requires documentation" in text):
+        findings.append("medical necessity is not documented")
+        docs.append("medical necessity letter")
+    if "spouse" in text or "unrelated family" in text or "full medical history" in text:
+        findings.append("unrelated family medical information should not be used")
     if "boarding pass" in text or "flight" in text:
         findings.append("travel delay proof requires carrier confirmation")
         docs.append("official carrier delay letter")

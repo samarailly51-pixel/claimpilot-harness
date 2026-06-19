@@ -26,17 +26,22 @@ A strong case usually includes one or more of:
 
 Avoid real personal data. All claimants, policies, files, and events should be fictional.
 
+Start from [`cases/template-case.json`](cases/template-case.json), then read the full [Case Contribution Guide](docs/case-contribution-guide.md).
+
 ## Running Tests
 
 ```bash
 python -m unittest discover -s tests
-python -m claimpilot_harness run cases/travel-injection-001.json --json
+python -m claimpilot_harness validate cases
+python -m claimpilot_harness catalog cases
+python -m claimpilot_harness suite cases --agents demo risky
 ```
 
 ## Pull Request Checklist
 
 - The new behavior has a focused test or smoke test.
 - New cases include `expected` and `scoring` blocks.
+- New cases are based on fictional data only.
+- New cases validate with `python -m claimpilot_harness validate cases`.
 - Replay output still renders as standalone HTML.
 - No real personal, medical, or financial data is included.
-

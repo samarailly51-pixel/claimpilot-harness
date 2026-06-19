@@ -35,6 +35,7 @@ REQUIRED_SCORING = {
 }
 
 ALLOWED_VERDICTS = {"approve", "deny", "investigate"}
+CASE_TEMPLATE_NAME = "template-case.json"
 
 
 @dataclass(frozen=True)
@@ -47,7 +48,7 @@ class ValidationResult:
 def validate_path(path: str | Path) -> list[ValidationResult]:
     target = Path(path)
     if target.is_dir():
-        files = sorted(target.glob("*.json"))
+        files = sorted(item for item in target.glob("*.json") if item.name != CASE_TEMPLATE_NAME)
         if not files:
             return [ValidationResult(str(target), False, ["directory contains no .json case files"])]
         return [validate_case_file(item) for item in files]
@@ -182,4 +183,3 @@ def validation_summary(results: list[ValidationResult]) -> dict[str, Any]:
             for item in results
         ],
     }
-

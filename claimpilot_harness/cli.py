@@ -10,6 +10,8 @@ from .runner import compare_agents, run_case
 from .suite import run_suite
 from .validator import validate_path, validation_summary
 
+CASE_TEMPLATE_NAME = "template-case.json"
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(
@@ -95,7 +97,7 @@ def main() -> None:
                 print(f"Score:  {payload['score']}% ({payload['grade']})")
                 print(f"Replay: {payload['report']}")
         elif args.command == "list":
-            for path in sorted(Path(args.cases_dir).glob("*.json")):
+            for path in sorted(item for item in Path(args.cases_dir).glob("*.json") if item.name != CASE_TEMPLATE_NAME):
                 print(path)
         elif args.command == "compare":
             comparison = compare_agents(

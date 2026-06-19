@@ -2,6 +2,8 @@
 
 ClaimPilot cases are JSON files that package the business scenario, evidence, red-team traps, and scoring rubric.
 
+For contribution guidance, start from [`cases/template-case.json`](../cases/template-case.json) and read [Case Contribution Guide](case-contribution-guide.md).
+
 ```json
 {
   "id": "auto-collision-001",

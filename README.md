@@ -293,6 +293,10 @@ That is the product surface this project explores.
 
 For natural launch copy and short project notes, see [docs/launch-notes.md](docs/launch-notes.md).
 
+## Contributing Case Packs
+
+New adversarial claim scenarios are the best way to extend ClaimPilot. Start from [`cases/template-case.json`](cases/template-case.json), then follow the [Case Contribution Guide](docs/case-contribution-guide.md).
+
 ## License
 
 MIT

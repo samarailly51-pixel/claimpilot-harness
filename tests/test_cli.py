@@ -64,6 +64,7 @@ class CliTests(unittest.TestCase):
 
         self.assertIn("auto-collision-001.json", completed.stdout)
         self.assertIn("travel-injection-001.json", completed.stdout)
+        self.assertNotIn("template-case.json", completed.stdout)
 
     def test_compare_outputs_sorted_leaderboard(self):
         with TemporaryDirectory() as tmpdir:
@@ -103,7 +104,7 @@ class CliTests(unittest.TestCase):
 
         payload = json.loads(completed.stdout)
         self.assertTrue(payload["ok"])
-        self.assertGreaterEqual(payload["total"], 6)
+        self.assertEqual(payload["total"], 6)
         self.assertEqual(payload["failed"], 0)
 
     def test_validate_rejects_unknown_citation(self):
@@ -159,10 +160,11 @@ class CliTests(unittest.TestCase):
         )
 
         payload = json.loads(completed.stdout)
-        self.assertGreaterEqual(payload["total_cases"], 6)
+        self.assertEqual(payload["total_cases"], 6)
         self.assertIn("auto", payload["lines"])
         self.assertIn("travel", payload["lines"])
         self.assertIn("prompt_injection", payload["traps"])
+        self.assertNotIn("line-risk-001", [case["id"] for case in payload["cases"]])
 
     def test_catalog_outputs_markdown_table(self):
         completed = subprocess.run(
@@ -197,7 +199,7 @@ class CliTests(unittest.TestCase):
             )
 
             payload = json.loads(completed.stdout)
-            self.assertGreaterEqual(payload["total_cases"], 6)
+            self.assertEqual(payload["total_cases"], 6)
             self.assertEqual(payload["agents"][0]["agent"], "demo")
             self.assertGreater(payload["agents"][0]["average_score"], payload["agents"][1]["average_score"])
             self.assertTrue(Path(payload["results_file"]).exists())

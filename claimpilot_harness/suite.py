@@ -9,6 +9,8 @@ from .cases import load_case
 from .replay import render_replay, render_suite_report
 from .scorer import score_decision
 
+CASE_TEMPLATE_NAME = "template-case.json"
+
 
 def run_suite(
     cases_path: str | Path,
@@ -73,7 +75,7 @@ def run_suite(
 def discover_cases(path: str | Path) -> list[Path]:
     target = Path(path)
     if target.is_dir():
-        return sorted(target.glob("*.json"))
+        return sorted(item for item in target.glob("*.json") if item.name != CASE_TEMPLATE_NAME)
     return [target]
 
 

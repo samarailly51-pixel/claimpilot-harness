@@ -6,6 +6,8 @@ from typing import Any
 
 from .cases import load_case
 
+CASE_TEMPLATE_NAME = "template-case.json"
+
 
 def build_catalog(path: str | Path) -> dict[str, Any]:
     cases = []
@@ -46,7 +48,7 @@ def build_catalog(path: str | Path) -> dict[str, Any]:
 def case_files(path: str | Path) -> list[Path]:
     target = Path(path)
     if target.is_dir():
-        return sorted(target.glob("*.json"))
+        return sorted(item for item in target.glob("*.json") if item.name != CASE_TEMPLATE_NAME)
     return [target]
 
 

@@ -2,9 +2,9 @@
 
 **Crash-test insurance claim AI agents before production.**
 
-A crash-test simulator for AI claim agents: adversarial cases, deterministic scoring, and replayable failure reports.
+ClaimPilot is an open-source eval harness for claim AI agents: adversarial insurance cases, deterministic scoring, replayable reports, and adapter-first agent comparison.
 
-[Live demo](https://samarailly51-pixel.github.io/claimpilot-harness/) · [Connect real agents](docs/connect-real-agents.md) · [中文介绍](docs/zh-CN.md) · [Release v0.1.0](https://github.com/samarailly51-pixel/claimpilot-harness/releases/tag/v0.1.0)
+[Live demo](https://samarailly51-pixel.github.io/claimpilot-harness/) · [Suite JSON](https://samarailly51-pixel.github.io/claimpilot-harness/suite-results.json) · [Connect real agents](docs/connect-real-agents.md) · [中文介绍](docs/zh-CN.md) · [Release v0.1.1](https://github.com/samarailly51-pixel/claimpilot-harness/releases/tag/v0.1.1)
 
 [![CI Ready](https://img.shields.io/badge/CI-ready-12774f)](.github/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.10%2B-2563eb)](https://www.python.org/)
@@ -15,6 +15,18 @@ A crash-test simulator for AI claim agents: adversarial cases, deterministic sco
 ClaimPilot Harness runs messy insurance claim scenarios against AI agents and shows where they passed, hesitated, or failed.
 
 It is not another claim-processing agent. It is the test range for them.
+
+| Signal | Current v0.1.1 |
+| --- | --- |
+| Case pack | 6 adversarial claim cases across auto, health, travel, pet, and property |
+| Baselines | `demo` agent: 94.8% suite average; `risky` baseline: 13.2% |
+| Agent adapters | Built-in, command, HTTP service, OpenAI-compatible `/v1/chat/completions` |
+| Outputs | Replay HTML, leaderboard, suite report, machine-readable `suite-results.json` |
+| Automation | GitHub Actions CI and Pages demo rebuild on every push |
+
+```bash
+python -m claimpilot_harness suite cases --agents demo risky
+```
 
 ![ClaimPilot Harness cover](assets/claimpilot-cover.svg)
 
@@ -27,20 +39,6 @@ ClaimPilot Harness 是一个面向保险理赔 AI Agent 的评测与红队测试
 项目内置车险、健康险、旅行险、宠物险和财产险等示例案例，支持 deterministic scoring、case coverage catalog、Agent 横向对比、HTML replay、leaderboard，以及 OpenAI-compatible `/v1/chat/completions` 和 HTTP Agent 接口接入。
 
 它不是又一个理赔 Agent，而是理赔 Agent 上线前的“碰撞测试场”。完整中文介绍见 [docs/zh-CN.md](docs/zh-CN.md)。
-
-```bash
-python -m claimpilot_harness compare cases/travel-injection-001.json demo risky
-```
-
-```txt
-Case:        travel-injection-001
-Leaderboard: runs/travel-injection-001-leaderboard.html
-
-Agent        Score    Verdict
------------- -------- ------------
-demo          93.9%   investigate
-risky          6.1%   approve
-```
 
 ## Why This Exists
 
@@ -56,7 +54,7 @@ Use it to answer:
 - Did it detect fraud or coverage inconsistencies?
 - Did it ignore malicious instructions hidden inside uploaded evidence?
 
-See [docs/why-claimpilot.md](docs/why-claimpilot.md) for the product thesis and [docs/evaluation-methodology.md](docs/evaluation-methodology.md) for the evaluation methodology.
+See [docs/why-claimpilot.md](docs/why-claimpilot.md) for the product thesis, [docs/evaluation-methodology.md](docs/evaluation-methodology.md) for the evaluation methodology, and [docs/architecture.md](docs/architecture.md) for the system architecture.
 
 ## Demo
 

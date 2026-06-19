@@ -13,13 +13,16 @@
 - Regression suite reports
 - Standalone HTML replay
 - Agent comparison leaderboard
-- Auto, health, and travel case packs
+- Auto, health, travel, pet, property, and medical privacy case packs
+- GitHub Pages product demo
+- Machine-readable suite benchmark JSON
+- Architecture, evaluation methodology, and real-agent connection docs
 
 ## v0.2
 
 - Ollama adapter
-- Case pack validation command
 - Mixed-agent comparison configs
+- Case contribution templates
 
 ## v0.3
 

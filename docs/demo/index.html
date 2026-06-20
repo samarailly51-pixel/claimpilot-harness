@@ -26,6 +26,7 @@
       color: var(--ink);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       letter-spacing: 0;
+      overflow-x: hidden;
     }
     a { color: inherit; text-decoration: none; }
     .hero {
@@ -108,6 +109,7 @@
       font-size: clamp(40px, 7vw, 92px);
       line-height: 0.96;
       letter-spacing: 0;
+      overflow-wrap: break-word;
     }
     .lead {
       max-width: 780px;
@@ -222,21 +224,113 @@
       text-align: right;
       font-weight: 850;
     }
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+    .filter-button {
+      min-height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 12px;
+      background: white;
+      color: var(--ink);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+    .filter-button.active {
+      background: #0f1f18;
+      border-color: #0f1f18;
+      color: white;
+    }
     .case-grid {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
     }
     .case {
-      min-height: 128px;
+      min-height: 250px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      gap: 18px;
     }
     .case strong {
       display: block;
       font-size: 17px;
       margin-bottom: 8px;
+    }
+    .case-title {
+      font-size: 18px;
+      font-weight: 850;
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+    .case-meta, .tag-list, .case-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .score-strip {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .mini-score {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fbfdfb;
+    }
+    .mini-score span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .mini-score strong {
+      font-size: 22px;
+      margin: 0;
+    }
+    .matrix-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+    }
+    .matrix {
+      width: 100%;
+      min-width: 780px;
+      border-collapse: collapse;
+    }
+    .matrix th,
+    .matrix td {
+      padding: 11px 10px;
+      border-top: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+      font-size: 13px;
+    }
+    .matrix th {
+      color: var(--muted);
+      font-weight: 850;
+      background: #fbfdfb;
+    }
+    .matrix .mark {
+      width: 22px;
+      height: 22px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 999px;
+      background: #edf7f2;
+      color: #12774f;
+      font-weight: 850;
     }
     .pill {
       display: inline-flex;
@@ -309,6 +403,33 @@
       }
       .score { text-align: left; }
     }
+    @media (max-width: 520px) {
+      .hero-content {
+        width: auto;
+        max-width: none;
+        margin-left: 16px;
+        margin-right: 16px;
+        padding-top: 154px;
+      }
+      h1 {
+        max-width: 100%;
+        font-size: 31px;
+        line-height: 1.04;
+        overflow-wrap: anywhere;
+      }
+      .lead {
+        font-size: 17px;
+        overflow-wrap: anywhere;
+      }
+      .actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .actions .button {
+        width: 100%;
+        flex: 0 0 auto;
+      }
+    }
   </style>
 </head>
 <body>
@@ -325,7 +446,7 @@
     </nav>
     <div class="hero-content">
       <div class="eyebrow">Agent evals for insurance claims</div>
-      <h1>Crash-test insurance claim AI agents before production.</h1>
+      <h1>Crash-test insurance<br>claim AI agents<br>before production.</h1>
       <p class="lead">ClaimPilot turns messy claim files into repeatable adversarial tests, then scores whether an agent chose the safe action, cited evidence, requested missing proof, and resisted prompt injection.</p>
       <div class="actions">
         <a class="button" href="suite-report.html">Open suite report</a>
@@ -334,9 +455,9 @@
       </div>
       <div class="hero-stats" aria-label="Project metrics">
         <div class="stat"><strong>6</strong><span>adversarial claim cases</span></div>
-        <div class="stat"><strong>14</strong><span>CI tests passing</span></div>
+        <div class="stat"><strong>17</strong><span>CI tests passing</span></div>
         <div class="stat"><strong>94.8%</strong><span>demo agent suite score</span></div>
-        <div class="stat"><strong>13.2%</strong><span>risky baseline score</span></div>
+        <div class="stat"><strong>12</strong><span>risk taxonomy tags</span></div>
       </div>
     </div>
   </header>
@@ -379,16 +500,31 @@
     <div class="inner">
       <div class="section-head">
         <div>
-          <h2>Case coverage across claim risk patterns.</h2>
-          <p class="muted">The included pack covers six adversarial cases across five insurance lines and common production failure modes.</p>
+          <h2>Browse the case gallery.</h2>
+          <p class="muted">Filter the benchmark by risk tag, compare baseline scores, and open the exact replay behind each result.</p>
         </div>
       </div>
-      <div class="case-grid">
-        <div class="panel case"><div><strong>Auto</strong><p class="muted">Repair invoice conflicts with photos and claimant chat.</p></div><span class="pill">mismatch</span></div>
-        <div class="panel case"><div><strong>Health</strong><p class="muted">Medical necessity, privacy lure, and exclusion ambiguity.</p></div><span class="pill">privacy</span></div>
-        <div class="panel case"><div><strong>Travel</strong><p class="muted">Missing official proof plus hidden prompt injection.</p></div><span class="pill">injection</span></div>
-        <div class="panel case"><div><strong>Pet</strong><p class="muted">Symptoms appear before enrollment.</p></div><span class="pill">timing</span></div>
-        <div class="panel case"><div><strong>Property</strong><p class="muted">Repair scope exceeds moisture and photo evidence.</p></div><span class="pill">scope</span></div>
+      <div class="filter-bar" id="tagFilters" aria-label="Risk tag filters"></div>
+      <div class="case-grid" id="caseGallery" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section class="band white" id="coverage">
+    <div class="inner">
+      <div class="section-head">
+        <div>
+          <h2>Coverage matrix.</h2>
+          <p class="muted">A compact view of which insurance lines exercise each reusable risk pattern.</p>
+        </div>
+        <div class="actions">
+          <a class="button" href="https://github.com/samarailly51-pixel/claimpilot-harness/blob/main/docs/risk-taxonomy.md">Risk taxonomy</a>
+        </div>
+      </div>
+      <div class="matrix-wrap">
+        <table class="matrix" id="coverageMatrix">
+          <thead><tr><th>Risk tag</th></tr></thead>
+          <tbody></tbody>
+        </table>
       </div>
     </div>
   </section>
@@ -420,5 +556,133 @@
       </div>
     </div>
   </footer>
+  <script>
+    const fallbackResults = [];
+    let galleryCases = [];
+    let activeTag = "all";
+
+    async function loadSuiteResults() {
+      try {
+        const response = await fetch("suite-results.json", { cache: "no-store" });
+        if (!response.ok) throw new Error("suite-results unavailable");
+        const payload = await response.json();
+        return payload.results || fallbackResults;
+      } catch (error) {
+        return fallbackResults;
+      }
+    }
+
+    function groupCases(results) {
+      const map = new Map();
+      for (const result of results) {
+        if (!map.has(result.case_id)) {
+          map.set(result.case_id, {
+            id: result.case_id,
+            title: result.case_title,
+            line: result.line,
+            severity: result.severity,
+            tags: result.tags || [],
+            agents: {}
+          });
+        }
+        map.get(result.case_id).agents[result.agent] = result;
+      }
+      return Array.from(map.values());
+    }
+
+    function renderFilters(cases) {
+      const tags = Array.from(new Set(cases.flatMap((item) => item.tags))).sort();
+      const container = document.getElementById("tagFilters");
+      container.innerHTML = "";
+      const all = document.createElement("button");
+      all.className = "filter-button active";
+      all.type = "button";
+      all.textContent = "all cases";
+      all.dataset.tag = "all";
+      container.appendChild(all);
+      for (const tag of tags) {
+        const button = document.createElement("button");
+        button.className = "filter-button";
+        button.type = "button";
+        button.textContent = tag;
+        button.dataset.tag = tag;
+        container.appendChild(button);
+      }
+      container.addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-tag]");
+        if (!button) return;
+        activeTag = button.dataset.tag;
+        container.querySelectorAll(".filter-button").forEach((item) => item.classList.toggle("active", item === button));
+        renderGallery(galleryCases);
+      });
+    }
+
+    function renderGallery(cases) {
+      const container = document.getElementById("caseGallery");
+      const visible = activeTag === "all" ? cases : cases.filter((item) => item.tags.includes(activeTag));
+      container.innerHTML = visible.map(renderCaseCard).join("");
+    }
+
+    function renderCaseCard(item) {
+      const demo = item.agents.demo;
+      const risky = item.agents.risky;
+      const bestReplay = demo?.replay || risky?.replay || "suite-report.html";
+      return `<article class="panel case">
+        <div>
+          <div class="case-meta">
+            <span class="pill">${escapeHtml(item.line)}</span>
+            <span class="pill">${escapeHtml(item.severity)}</span>
+          </div>
+          <div class="case-title">${escapeHtml(item.id)}</div>
+          <p class="muted">${escapeHtml(item.title)}</p>
+          <div class="tag-list">${item.tags.map((tag) => `<span class="pill">${escapeHtml(tag)}</span>`).join("")}</div>
+        </div>
+        <div>
+          <div class="score-strip">
+            ${renderMiniScore("demo", demo)}
+            ${renderMiniScore("risky", risky)}
+          </div>
+          <div class="case-actions" style="margin-top: 12px;">
+            <a class="button secondary" href="${escapeHtml(bestReplay)}">Open replay</a>
+          </div>
+        </div>
+      </article>`;
+    }
+
+    function renderMiniScore(label, result) {
+      if (!result) return `<div class="mini-score"><span>${escapeHtml(label)}</span><strong>-</strong></div>`;
+      return `<div class="mini-score"><span>${escapeHtml(label)} / ${escapeHtml(result.verdict)}</span><strong>${Number(result.score).toFixed(1)}%</strong></div>`;
+    }
+
+    function renderCoverageMatrix(cases) {
+      const lines = Array.from(new Set(cases.map((item) => item.line))).sort();
+      const tags = Array.from(new Set(cases.flatMap((item) => item.tags))).sort();
+      const table = document.getElementById("coverageMatrix");
+      table.querySelector("thead tr").innerHTML = `<th>Risk tag</th>${lines.map((line) => `<th>${escapeHtml(line)}</th>`).join("")}`;
+      table.querySelector("tbody").innerHTML = tags.map((tag) => {
+        const cells = lines.map((line) => {
+          const count = cases.filter((item) => item.line === line && item.tags.includes(tag)).length;
+          return `<td>${count ? `<span class="mark">${count}</span>` : ""}</td>`;
+        }).join("");
+        return `<tr><th>${escapeHtml(tag)}</th>${cells}</tr>`;
+      }).join("");
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    loadSuiteResults().then((results) => {
+      galleryCases = groupCases(results);
+      renderFilters(galleryCases);
+      renderGallery(galleryCases);
+      renderCoverageMatrix(galleryCases);
+    });
+  </script>
 </body>
 </html>

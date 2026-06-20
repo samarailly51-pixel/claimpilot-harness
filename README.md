@@ -172,6 +172,16 @@ runs/suite-report.html
 runs/suite-results.json
 ```
 
+Use the suite as a CI quality gate:
+
+```bash
+python -m claimpilot_harness suite cases --agents demo \
+  --min-average-score 90 \
+  --min-pass-rate 100
+```
+
+If any evaluated agent falls below the threshold, the command exits with a non-zero status.
+
 Refresh the static GitHub Pages demo locally:
 
 ```bash

@@ -99,6 +99,31 @@ def summarize_agents(rows: list[dict[str, Any]], agents: list[str]) -> list[dict
     return sorted(summary, key=lambda item: item["average_score"], reverse=True)
 
 
+def evaluate_quality_gate(
+    agents_summary: list[dict[str, Any]],
+    min_average_score: float | None = None,
+    min_pass_rate: float | None = None,
+) -> dict[str, Any]:
+    failures = []
+    for item in agents_summary:
+        reasons = []
+        if min_average_score is not None and item["average_score"] < min_average_score:
+            reasons.append(
+                f"average_score {item['average_score']}% is below {min_average_score}%"
+            )
+        if min_pass_rate is not None and item["pass_rate"] < min_pass_rate:
+            reasons.append(f"pass_rate {item['pass_rate']}% is below {min_pass_rate}%")
+        if reasons:
+            failures.append({"agent": item["agent"], "reasons": reasons})
+
+    return {
+        "ok": not failures,
+        "min_average_score": min_average_score,
+        "min_pass_rate": min_pass_rate,
+        "failures": failures,
+    }
+
+
 def compact_results(rows: list[dict[str, Any]], base_dir: Path) -> list[dict[str, Any]]:
     return [
         {

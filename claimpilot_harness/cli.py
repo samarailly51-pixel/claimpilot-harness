@@ -7,7 +7,7 @@ from pathlib import Path
 
 from .catalog import build_catalog, format_catalog_markdown, format_catalog_text
 from .runner import compare_agents, run_case
-from .suite import run_suite
+from .suite import evaluate_quality_gate, run_suite
 from .validator import validate_path, validation_summary
 
 CASE_TEMPLATE_NAME = "template-case.json"
@@ -65,6 +65,8 @@ def main() -> None:
     suite_parser.add_argument("--openai-api-key-env", default="OPENAI_API_KEY", help="Environment variable containing the API key")
     suite_parser.add_argument("--out", default="runs", help="Directory for suite reports and replay reports")
     suite_parser.add_argument("--json", action="store_true", help="Print machine-readable suite result")
+    suite_parser.add_argument("--min-average-score", type=float, help="Fail if any agent average score is below this percent")
+    suite_parser.add_argument("--min-pass-rate", type=float, help="Fail if any agent pass rate is below this percent")
 
     args = parser.parse_args()
     try:
@@ -175,6 +177,13 @@ def main() -> None:
                 "results_file": suite["results_file"],
                 "results": suite["results"],
             }
+            gate = evaluate_quality_gate(
+                suite["agents"],
+                min_average_score=args.min_average_score,
+                min_pass_rate=args.min_pass_rate,
+            )
+            if args.min_average_score is not None or args.min_pass_rate is not None:
+                payload["quality_gate"] = gate
             if args.json:
                 print(json.dumps(payload, ensure_ascii=False, indent=2))
             else:
@@ -186,6 +195,16 @@ def main() -> None:
                 print("------------ ---------- ----------")
                 for item in payload["agents"]:
                     print(f"{item['agent']:<12} {item['average_score']:>8}% {item['pass_rate']:>9}%")
+                if args.min_average_score is not None or args.min_pass_rate is not None:
+                    print("")
+                    if gate["ok"]:
+                        print("Quality gate: PASS")
+                    else:
+                        print("Quality gate: FAIL")
+                        for failure in gate["failures"]:
+                            print(f"- {failure['agent']}: {'; '.join(failure['reasons'])}")
+            if not gate["ok"]:
+                raise SystemExit(1)
     except (RuntimeError, ValueError) as exc:
         print(f"claimpilot: error: {exc}", file=sys.stderr)
         raise SystemExit(2) from exc

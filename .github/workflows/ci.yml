@@ -36,6 +36,9 @@ jobs:
       - name: Run suite smoke test
         run: python -m claimpilot_harness suite cases --agents demo risky --json
 
+      - name: Run suite quality gate smoke test
+        run: python -m claimpilot_harness suite cases --agents demo --min-average-score 90 --min-pass-rate 100 --json
+
       - name: Build demo site
         run: python scripts/build_demo_site.py
 

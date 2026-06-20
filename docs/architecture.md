@@ -104,7 +104,25 @@ ClaimPilot writes three main output types:
 
 The HTML reports are meant to make failures inspectable, not just scored.
 
-### 5. GitHub Pages Automation
+### 5. Quality Gate
+
+The suite command can also act as a release gate:
+
+```bash
+python -m claimpilot_harness suite cases --agents demo \
+  --min-average-score 90 \
+  --min-pass-rate 100
+```
+
+If any evaluated agent falls below the configured average score or pass-rate threshold, the command exits with a non-zero status. This lets teams wire ClaimPilot into CI, model regression checks, or pre-release review flows.
+
+The gate still writes the normal suite outputs, so reviewers can inspect why the agent failed:
+
+- `suite-report.html`
+- `suite-results.json`
+- per-case replay reports
+
+### 6. GitHub Pages Automation
 
 `.github/workflows/pages.yml` runs:
 

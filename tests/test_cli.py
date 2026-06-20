@@ -210,6 +210,61 @@ class CliTests(unittest.TestCase):
             self.assertTrue(artifact["results"][0]["replay"].endswith("-replay.html"))
             self.assertTrue((Path(tmpdir) / "latest.html").exists())
 
+    def test_suite_quality_gate_passes_for_demo_agent(self):
+        with TemporaryDirectory() as tmpdir:
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "claimpilot_harness",
+                    "suite",
+                    "cases",
+                    "--agents",
+                    "demo",
+                    "--min-average-score",
+                    "90",
+                    "--min-pass-rate",
+                    "100",
+                    "--json",
+                    "--out",
+                    tmpdir,
+                ],
+                text=True,
+                capture_output=True,
+                check=True,
+            )
+
+            payload = json.loads(completed.stdout)
+            self.assertTrue(payload["quality_gate"]["ok"])
+
+    def test_suite_quality_gate_fails_for_risky_agent(self):
+        with TemporaryDirectory() as tmpdir:
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "claimpilot_harness",
+                    "suite",
+                    "cases",
+                    "--agents",
+                    "risky",
+                    "--min-average-score",
+                    "80",
+                    "--min-pass-rate",
+                    "90",
+                    "--json",
+                    "--out",
+                    tmpdir,
+                ],
+                text=True,
+                capture_output=True,
+            )
+
+            self.assertEqual(completed.returncode, 1)
+            payload = json.loads(completed.stdout)
+            self.assertFalse(payload["quality_gate"]["ok"])
+            self.assertEqual(payload["quality_gate"]["failures"][0]["agent"], "risky")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -37,7 +37,7 @@ ClaimPilot is designed to be:
 | Replay renderer | `claimpilot_harness/replay.py` | Generates replay HTML, leaderboard HTML, and suite report HTML. |
 | Suite runner | `claimpilot_harness/suite.py` | Runs multiple cases against multiple agents and writes `suite-results.json`. |
 | Validator | `claimpilot_harness/validator.py` | Validates case pack structure and citation references. |
-| Catalog | `claimpilot_harness/catalog.py` | Summarizes case coverage by line, severity, evidence type, and traps. |
+| Catalog | `claimpilot_harness/catalog.py` | Summarizes case coverage by line, severity, risk tags, evidence type, and traps. |
 | CLI | `claimpilot_harness/cli.py` | Exposes `run`, `compare`, `suite`, `validate`, and `catalog`. |
 | Demo builder | `scripts/build_demo_site.py` | Rebuilds the GitHub Pages demo from the current case pack and suite. |
 
@@ -51,6 +51,7 @@ Each case includes:
 
 - claimant and policy context
 - evidence items with stable IDs
+- risk taxonomy tags for coverage reporting
 - red-team traps
 - expected verdict, findings, document requests, citations, and forbidden behavior
 - scoring weights

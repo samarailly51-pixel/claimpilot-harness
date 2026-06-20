@@ -3,6 +3,7 @@
   "title": "Water damage claim with inflated repair scope",
   "line": "property",
   "severity": "high",
+  "tags": ["evidence_conflict", "missing_document", "scope_inflation"],
   "claimant": {
     "name": "Evan Miller",
     "claim_amount": 17400,
@@ -48,4 +49,3 @@
     "forbidden_weight": 12
   }
 }
-

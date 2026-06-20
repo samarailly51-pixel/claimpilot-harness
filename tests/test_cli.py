@@ -117,6 +117,7 @@ class CliTests(unittest.TestCase):
                         "title": "Bad case",
                         "line": "test",
                         "severity": "low",
+                        "tags": ["missing_document"],
                         "claimant": {},
                         "policy": {},
                         "evidence": [{"id": "E1", "type": "note", "summary": "Evidence."}],
@@ -163,8 +164,11 @@ class CliTests(unittest.TestCase):
         self.assertEqual(payload["total_cases"], 6)
         self.assertIn("auto", payload["lines"])
         self.assertIn("travel", payload["lines"])
+        self.assertIn("prompt_injection", payload["tags"])
+        self.assertIn("missing_document", payload["tags"])
         self.assertIn("prompt_injection", payload["traps"])
         self.assertNotIn("line-risk-001", [case["id"] for case in payload["cases"]])
+        self.assertIn("tags", payload["cases"][0])
 
     def test_catalog_outputs_markdown_table(self):
         completed = subprocess.run(
@@ -174,8 +178,54 @@ class CliTests(unittest.TestCase):
             check=True,
         )
 
-        self.assertIn("| Case | Line | Severity | Expected Verdict | Traps |", completed.stdout)
+        self.assertIn("| Case | Line | Severity | Expected Verdict | Tags | Traps |", completed.stdout)
         self.assertIn("`travel-injection-001`", completed.stdout)
+        self.assertIn("prompt_injection", completed.stdout)
+
+    def test_validate_rejects_invalid_tags(self):
+        with TemporaryDirectory() as tmpdir:
+            case_path = Path(tmpdir) / "bad-tags.json"
+            case_path.write_text(
+                json.dumps(
+                    {
+                        "id": "bad-tags",
+                        "title": "Bad tags",
+                        "line": "test",
+                        "severity": "low",
+                        "tags": ["ValidButWrongCase"],
+                        "claimant": {},
+                        "policy": {},
+                        "evidence": [{"id": "E1", "type": "note", "summary": "Evidence."}],
+                        "traps": [],
+                        "expected": {
+                            "verdict": "investigate",
+                            "must_find": [],
+                            "must_request": [],
+                            "must_cite": ["E1"],
+                            "must_not": [],
+                        },
+                        "scoring": {
+                            "pass_threshold": 75,
+                            "verdict_weight": 30,
+                            "finding_weight": 12,
+                            "document_weight": 8,
+                            "citation_weight": 6,
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            completed = subprocess.run(
+                [sys.executable, "-m", "claimpilot_harness", "validate", str(case_path), "--json"],
+                text=True,
+                capture_output=True,
+            )
+
+        self.assertEqual(completed.returncode, 1)
+        payload = json.loads(completed.stdout)
+        self.assertFalse(payload["ok"])
+        self.assertIn("tags[0]", payload["results"][0]["errors"][0])
 
     def test_suite_outputs_agent_summary_and_report(self):
         with TemporaryDirectory() as tmpdir:
@@ -207,6 +257,7 @@ class CliTests(unittest.TestCase):
             self.assertTrue(results_file.exists())
             artifact = json.loads(results_file.read_text(encoding="utf-8"))
             self.assertEqual(artifact["report"], "suite-report.html")
+            self.assertIn("tags", artifact["results"][0])
             self.assertTrue(artifact["results"][0]["replay"].endswith("-replay.html"))
             self.assertTrue((Path(tmpdir) / "latest.html").exists())
 

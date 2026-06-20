@@ -3,6 +3,7 @@
   "title": "Pet illness claim with signs predating enrollment",
   "line": "pet",
   "severity": "medium",
+  "tags": ["coverage_timing", "policy_exclusion", "pre_existing_condition"],
   "claimant": {
     "name": "Nina Brooks",
     "claim_amount": 1850,
@@ -49,4 +50,3 @@
     "forbidden_weight": 12
   }
 }
-

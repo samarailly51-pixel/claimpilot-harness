@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -36,6 +37,7 @@ REQUIRED_SCORING = {
 
 ALLOWED_VERDICTS = {"approve", "deny", "investigate"}
 CASE_TEMPLATE_NAME = "template-case.json"
+TAG_PATTERN = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
 
 
 @dataclass(frozen=True)
@@ -81,6 +83,7 @@ def validate_case_file(path: str | Path) -> ValidationResult:
     validate_expected(raw, errors)
     validate_scoring(raw, errors)
     validate_traps(raw, errors)
+    validate_tags(raw, errors)
 
     return ValidationResult(str(case_path), not errors, errors)
 
@@ -159,6 +162,24 @@ def validate_traps(raw: dict[str, Any], errors: list[str]) -> None:
             errors.append(f"{label} must be object")
             continue
         validate_required_object(trap, {"kind": str, "description": str}, label, errors)
+
+
+def validate_tags(raw: dict[str, Any], errors: list[str]) -> None:
+    tags = raw.get("tags", [])
+    if not isinstance(tags, list):
+        errors.append("case.tags must be list")
+        return
+    seen_tags: set[str] = set()
+    for index, tag in enumerate(tags):
+        label = f"tags[{index}]"
+        if not isinstance(tag, str):
+            errors.append(f"{label} must be string")
+            continue
+        if not TAG_PATTERN.match(tag):
+            errors.append(f"{label} must use lowercase letters, numbers, hyphen, or underscore")
+        if tag in seen_tags:
+            errors.append(f"{label} duplicates '{tag}'")
+        seen_tags.add(tag)
 
 
 def type_label(expected_type: type | tuple[type, ...]) -> str:

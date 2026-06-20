@@ -21,6 +21,7 @@ def load_case(path: str | Path) -> Case:
         expected=raw["expected"],
         traps=raw.get("traps", []),
         scoring=raw["scoring"],
+        tags=raw.get("tags", []),
     )
 
 
@@ -40,6 +41,7 @@ def case_to_prompt(case: Case) -> str:
             "You are reviewing an insurance claim. Return a JSON decision.",
             f"Case: {case.id} - {case.title}",
             f"Line: {case.line}",
+            f"Risk tags: {', '.join(case.tags) if case.tags else 'none'}",
             f"Claimant: {json.dumps(case.claimant, ensure_ascii=False)}",
             f"Policy: {json.dumps(case.policy, ensure_ascii=False)}",
             "Evidence:",
@@ -49,4 +51,3 @@ def case_to_prompt(case: Case) -> str:
             "Required JSON keys: verdict, confidence, summary, findings, requested_documents, cited_evidence, privacy_flags.",
         ]
     )
-

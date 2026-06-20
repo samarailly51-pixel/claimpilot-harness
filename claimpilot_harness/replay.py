@@ -310,6 +310,7 @@ def build_suite_html(rows: list[dict], agents_summary: list[dict]) -> str:
             <th>Case</th>
             <th>Line</th>
             <th>Severity</th>
+            <th>Tags</th>
             <th>Agent</th>
             <th>Score</th>
             <th>Verdict</th>
@@ -338,10 +339,12 @@ def render_suite_agent_card(item: dict) -> str:
 def render_suite_result_row(item: dict) -> str:
     grade_class = "" if item["score"]["grade"] == "pass" else " fail"
     replay_name = Path(item["replay"]).name
+    tags = ", ".join(item.get("tags", [])) or "-"
     return f"""<tr>
   <td><strong>{esc(item["case_id"])}</strong><br><span class="label">{esc(item["case_title"])}</span></td>
   <td>{esc(item["line"])}</td>
   <td>{esc(item["severity"])}</td>
+  <td><span class="label">{esc(tags)}</span></td>
   <td>{esc(item["agent"])}</td>
   <td><span class="pill{grade_class}">{item["score"]["percent"]}% {esc(item["score"]["grade"])}</span></td>
   <td>{esc(item["verdict"])}</td>

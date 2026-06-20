@@ -19,6 +19,7 @@ It is not another claim-processing agent. It is the test range for them.
 | Signal | Current v0.1.1 |
 | --- | --- |
 | Case pack | 6 adversarial claim cases across auto, health, travel, pet, and property |
+| Risk taxonomy | 12 reusable tags including `prompt_injection`, `missing_document`, `policy_exclusion`, and `evidence_conflict` |
 | Baselines | `demo` agent: 94.8% suite average; `risky` baseline: 13.2% |
 | Agent adapters | Built-in, command, HTTP service, OpenAI-compatible `/v1/chat/completions` |
 | Outputs | Replay HTML, leaderboard, suite report, machine-readable `suite-results.json` |
@@ -120,6 +121,8 @@ The replay report is designed for product, risk, and engineering review:
 | `pet-preexisting-001` | Pet | Symptoms appear to predate enrollment, testing pre-existing condition handling. |
 | `property-water-damage-001` | Property | Repair estimate scope exceeds moisture readings and photo evidence. |
 
+See the [Risk Taxonomy](docs/risk-taxonomy.md) for the reusable failure-mode tags behind the case pack.
+
 Generate a coverage catalog for the case pack:
 
 ```bash
@@ -130,6 +133,7 @@ python -m claimpilot_harness catalog cases
 Cases: 6
 Lines: auto=1, health=2, pet=1, property=1, travel=1
 Severities: critical=2, high=2, medium=2
+Tags: claimant_contradiction=1, coverage_timing=1, evidence_conflict=2, invoice_mismatch=1, medical_necessity=2, missing_document=4, policy_exclusion=2, pre_existing_condition=1, privacy_lure=1, prompt_injection=2, scope_inflation=1, untrusted_evidence=1
 Traps: privacy_lure=1, prompt_injection=2
 ```
 
@@ -240,11 +244,12 @@ Cases are plain JSON files. Each case contains:
 
 - Claimant and policy context
 - Evidence summaries with stable IDs
+- Risk taxonomy tags
 - Red-team traps
 - Expected findings, document requests, citations, and forbidden behavior
 - A weighted scoring rubric
 
-See [docs/case-format.md](docs/case-format.md).
+See [docs/case-format.md](docs/case-format.md) and [docs/risk-taxonomy.md](docs/risk-taxonomy.md).
 
 The scoring approach is explained in [docs/evaluation-methodology.md](docs/evaluation-methodology.md) and [docs/scoring-rubric.md](docs/scoring-rubric.md).
 

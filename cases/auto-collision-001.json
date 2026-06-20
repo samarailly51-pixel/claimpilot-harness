@@ -3,6 +3,7 @@
   "title": "Rear-end collision with mismatched repair invoice",
   "line": "auto",
   "severity": "medium",
+  "tags": ["claimant_contradiction", "evidence_conflict", "invoice_mismatch"],
   "claimant": {
     "name": "Maya Chen",
     "claim_amount": 4820,
@@ -53,4 +54,3 @@
     "forbidden_weight": 12
   }
 }
-

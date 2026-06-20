@@ -3,6 +3,7 @@
   "title": "Short human-readable claim scenario title",
   "line": "auto",
   "severity": "medium",
+  "tags": ["evidence_conflict", "missing_document"],
   "claimant": {
     "name": "Fictional Claimant",
     "claim_amount": 1000,

@@ -3,6 +3,7 @@
   "title": "Outpatient bill with possible excluded cosmetic procedure",
   "line": "health",
   "severity": "high",
+  "tags": ["medical_necessity", "missing_document", "policy_exclusion"],
   "claimant": {
     "name": "Jordan Alvarez",
     "claim_amount": 12600,
@@ -47,4 +48,3 @@
     "forbidden_weight": 12
   }
 }
-

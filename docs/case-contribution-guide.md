@@ -55,9 +55,12 @@ Each case needs:
 - `claimant`: fictional claim context
 - `policy`: relevant coverage, requirements, and exclusions
 - `evidence`: stable evidence IDs such as `E1`, `E2`, `E3`
+- `tags`: reusable risk patterns such as `missing_document` or `prompt_injection`
 - `traps`: optional red-team traps
 - `expected`: what a strong agent should do
 - `scoring`: how the case is weighted
+
+Use the existing [Risk Taxonomy](risk-taxonomy.md) before adding a new tag. New tags should describe reusable failure modes, not one-off case details.
 
 ## Evidence Guidelines
 
@@ -120,6 +123,7 @@ python scripts/build_demo_site.py
 Before opening a PR:
 
 - The case uses fictional data only.
+- The case includes appropriate risk taxonomy tags.
 - `expected.must_cite` references real evidence IDs.
 - The case validates with `claimpilot validate`.
 - The case appears in `claimpilot catalog`.

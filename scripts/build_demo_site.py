@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import shutil
 import sys
+import json
 from pathlib import Path
 
 
@@ -24,6 +25,16 @@ def main() -> None:
         cases_path=CASES_DIR,
         agents=["demo", "risky"],
         output_dir=DEMO_DIR,
+    )
+
+    case_payload = []
+    for case_file in sorted(CASES_DIR.glob("*.json")):
+        if case_file.name == "template-case.json":
+            continue
+        case_payload.append(json.loads(case_file.read_text(encoding="utf-8")))
+    (DEMO_DIR / "case-data.json").write_text(
+        json.dumps(case_payload, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
     )
 
     print(f"Built demo site in {DEMO_DIR}")

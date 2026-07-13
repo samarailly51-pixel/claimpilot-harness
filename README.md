@@ -2,9 +2,9 @@
 
 **Crash-test insurance claim AI agents before production.**
 
-ClaimPilot is an open-source eval harness for claim AI agents: adversarial insurance cases, deterministic scoring, replayable reports, and adapter-first agent comparison.
+ClaimPilot is an open-source evaluation product for claim AI agents: an interactive reliability lab, adversarial insurance cases, deterministic scoring, replayable reports, and adapter-first agent comparison.
 
-[Live demo](https://samarailly51-pixel.github.io/claimpilot-harness/) · [Suite JSON](https://samarailly51-pixel.github.io/claimpilot-harness/suite-results.json) · [Connect real agents](docs/connect-real-agents.md) · [中文介绍](docs/zh-CN.md) · [Release v0.1.1](https://github.com/samarailly51-pixel/claimpilot-harness/releases/tag/v0.1.1)
+[Interactive product demo](https://samarailly51-pixel.github.io/claimpilot-harness/) · [Suite report](https://samarailly51-pixel.github.io/claimpilot-harness/suite-report.html) · [Connect real agents](docs/connect-real-agents.md) · [中文介绍](docs/zh-CN.md) · [Release v0.1.1](https://github.com/samarailly51-pixel/claimpilot-harness/releases/tag/v0.1.1)
 
 [![CI Ready](https://img.shields.io/badge/CI-ready-12774f)](.github/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.10%2B-2563eb)](https://www.python.org/)

@@ -3,686 +3,151 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ClaimPilot Harness</title>
-  <meta name="description" content="Crash-test insurance claim AI agents before production with adversarial cases, deterministic scoring, and replayable reports.">
-  <style>
-    :root {
-      --ink: #17201b;
-      --muted: #5d6b63;
-      --line: #dce5dd;
-      --paper: #f8faf7;
-      --panel: #ffffff;
-      --good: #12774f;
-      --bad: #b42318;
-      --accent: #2563eb;
-      --amber: #b85c00;
-      --deep: #0f1f18;
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      background: var(--paper);
-      color: var(--ink);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      letter-spacing: 0;
-      overflow-x: hidden;
-    }
-    a { color: inherit; text-decoration: none; }
-    .hero {
-      position: relative;
-      min-height: 82vh;
-      display: flex;
-      align-items: flex-end;
-      overflow: hidden;
-      background: var(--deep);
-      color: white;
-    }
-    .hero img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      opacity: 0.28;
-      filter: saturate(0.9) contrast(1.05);
-    }
-    .hero::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: rgba(7, 19, 14, 0.72);
-    }
-    .nav {
-      position: absolute;
-      z-index: 2;
-      top: 0;
-      left: 0;
-      right: 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-      padding: 18px clamp(20px, 5vw, 72px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
-      background: rgba(7, 19, 14, 0.54);
-      backdrop-filter: blur(12px);
-    }
-    .brand {
-      font-weight: 850;
-      font-size: 18px;
-      white-space: nowrap;
-    }
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-    .nav-links a {
-      min-height: 34px;
-      display: inline-flex;
-      align-items: center;
-      padding: 6px 10px;
-      color: #d9f5e8;
-      font-size: 14px;
-      font-weight: 700;
-    }
-    .hero-content {
-      position: relative;
-      z-index: 1;
-      width: min(1120px, calc(100% - 40px));
-      margin: 0 auto;
-      padding: 132px 0 54px;
-    }
-    .eyebrow {
-      color: #a7f3d0;
-      font-size: 13px;
-      text-transform: uppercase;
-      font-weight: 850;
-      margin-bottom: 12px;
-    }
-    h1 {
-      margin: 0;
-      max-width: 980px;
-      font-size: clamp(40px, 7vw, 92px);
-      line-height: 0.96;
-      letter-spacing: 0;
-      overflow-wrap: break-word;
-    }
-    .lead {
-      max-width: 780px;
-      margin: 22px 0 0;
-      color: #d9f5e8;
-      font-size: clamp(17px, 2vw, 22px);
-      line-height: 1.5;
-    }
-    .actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 30px;
-    }
-    .button {
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 10px 16px;
-      border-radius: 8px;
-      font-weight: 850;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      background: #ffffff;
-      color: #0f1f18;
-    }
-    .button.secondary {
-      background: rgba(255, 255, 255, 0.08);
-      color: white;
-    }
-    .hero-stats {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 42px;
-      max-width: 980px;
-    }
-    .stat {
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      border-radius: 8px;
-      padding: 14px;
-      background: rgba(255, 255, 255, 0.08);
-    }
-    .stat strong {
-      display: block;
-      font-size: 28px;
-      margin-bottom: 4px;
-    }
-    .stat span {
-      color: #cfeee0;
-      font-size: 13px;
-    }
-    .band {
-      padding: 54px clamp(20px, 5vw, 72px);
-      border-top: 1px solid var(--line);
-    }
-    .band.white { background: white; }
-    .inner {
-      max-width: 1120px;
-      margin: 0 auto;
-    }
-    .section-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 24px;
-      margin-bottom: 22px;
-    }
-    h2 {
-      margin: 0;
-      font-size: clamp(25px, 3vw, 42px);
-      line-height: 1.08;
-      letter-spacing: 0;
-    }
-    .section-head p, .muted {
-      color: var(--muted);
-      line-height: 1.55;
-    }
-    .panel {
-      min-width: 0;
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 18px;
-      box-shadow: 0 10px 24px rgba(19, 31, 25, 0.05);
-    }
-    .suite-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-      align-items: stretch;
-    }
-    .score-row {
-      display: grid;
-      grid-template-columns: 84px 1fr 90px;
-      gap: 14px;
-      align-items: center;
-      padding: 14px 0;
-      border-top: 1px solid var(--line);
-    }
-    .score-row:first-child { border-top: 0; }
-    .score-row strong { font-size: 18px; }
-    .bar {
-      height: 10px;
-      background: #e9efe9;
-      border-radius: 999px;
-      overflow: hidden;
-    }
-    .bar > div { height: 100%; background: var(--accent); }
-    .bar > div.bad { background: var(--bad); }
-    .score {
-      text-align: right;
-      font-weight: 850;
-    }
-    .filter-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 18px;
-    }
-    .filter-button {
-      min-height: 34px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 6px 12px;
-      background: white;
-      color: var(--ink);
-      font: inherit;
-      font-size: 13px;
-      font-weight: 850;
-      cursor: pointer;
-    }
-    .filter-button.active {
-      background: #0f1f18;
-      border-color: #0f1f18;
-      color: white;
-    }
-    .case-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-    }
-    .case {
-      min-height: 250px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 18px;
-    }
-    .case strong {
-      display: block;
-      font-size: 17px;
-      margin-bottom: 8px;
-    }
-    .case-title {
-      font-size: 18px;
-      font-weight: 850;
-      line-height: 1.25;
-      margin-bottom: 8px;
-    }
-    .case-meta, .tag-list, .case-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-    }
-    .score-strip {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .mini-score {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 10px;
-      background: #fbfdfb;
-    }
-    .mini-score span {
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
-      margin-bottom: 4px;
-    }
-    .mini-score strong {
-      font-size: 22px;
-      margin: 0;
-    }
-    .matrix-wrap {
-      overflow-x: auto;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: white;
-    }
-    .matrix {
-      width: 100%;
-      min-width: 780px;
-      border-collapse: collapse;
-    }
-    .matrix th,
-    .matrix td {
-      padding: 11px 10px;
-      border-top: 1px solid var(--line);
-      text-align: left;
-      vertical-align: middle;
-      font-size: 13px;
-    }
-    .matrix th {
-      color: var(--muted);
-      font-weight: 850;
-      background: #fbfdfb;
-    }
-    .matrix .mark {
-      width: 22px;
-      height: 22px;
-      display: inline-grid;
-      place-items: center;
-      border-radius: 999px;
-      background: #edf7f2;
-      color: #12774f;
-      font-weight: 850;
-    }
-    .pill {
-      display: inline-flex;
-      width: fit-content;
-      min-height: 26px;
-      align-items: center;
-      padding: 3px 10px;
-      border-radius: 999px;
-      background: #edf7f2;
-      color: #13543a;
-      font-size: 13px;
-      font-weight: 850;
-    }
-    .flow {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
-    }
-    .step-number {
-      width: 32px;
-      height: 32px;
-      display: grid;
-      place-items: center;
-      border-radius: 999px;
-      background: #e8f0ff;
-      color: var(--accent);
-      font-weight: 850;
-      margin-bottom: 12px;
-    }
-    code {
-      display: block;
-      overflow: auto;
-      white-space: pre;
-      background: #101815;
-      color: #d1fae5;
-      border-radius: 8px;
-      padding: 16px;
-      line-height: 1.55;
-    }
-    footer {
-      padding: 32px clamp(20px, 5vw, 72px);
-      background: #0f1f18;
-      color: #d9f5e8;
-    }
-    footer .inner {
-      display: flex;
-      justify-content: space-between;
-      gap: 18px;
-      flex-wrap: wrap;
-    }
-    footer a {
-      color: white;
-      font-weight: 800;
-      margin-left: 14px;
-    }
-    @media (max-width: 900px) {
-      .nav { align-items: flex-start; flex-direction: column; }
-      .nav-links { justify-content: flex-start; }
-      .hero { min-height: auto; }
-      .hero-content { padding-top: 176px; }
-      .hero-stats, .suite-grid, .case-grid, .flow {
-        grid-template-columns: 1fr;
-      }
-      .section-head {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-      .score-row {
-        grid-template-columns: 1fr;
-      }
-      .score { text-align: left; }
-    }
-    @media (max-width: 520px) {
-      .hero-content {
-        width: auto;
-        max-width: none;
-        margin-left: 16px;
-        margin-right: 16px;
-        padding-top: 154px;
-      }
-      h1 {
-        max-width: 100%;
-        font-size: 31px;
-        line-height: 1.04;
-        overflow-wrap: anywhere;
-      }
-      .lead {
-        font-size: 17px;
-        overflow-wrap: anywhere;
-      }
-      .actions {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      .actions .button {
-        width: 100%;
-        flex: 0 0 auto;
-      }
-    }
-  </style>
+  <title>ClaimPilot Harness · Agent Reliability Lab</title>
+  <meta name="description" content="An interactive product demo and case study for evaluating insurance claim AI agents under adversarial conditions.">
+  <meta name="theme-color" content="#123c2d">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="hero">
-    <img src="claimpilot-demo.gif" alt="ClaimPilot replay report preview">
-    <nav class="nav" aria-label="Primary">
-      <a class="brand" href="index.html">ClaimPilot Harness</a>
-      <div class="nav-links">
-        <a href="suite-report.html">Suite Report</a>
-        <a href="travel-injection-001-leaderboard.html">Leaderboard</a>
-        <a href="https://github.com/samarailly51-pixel/claimpilot-harness/blob/main/docs/evaluation-methodology.md">Methodology</a>
-        <a href="https://github.com/samarailly51-pixel/claimpilot-harness">GitHub</a>
-      </div>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="ClaimPilot home">
+      <span class="brand-mark">CP</span>
+      <span>ClaimPilot Harness<small>Agent Reliability Lab</small></span>
+    </a>
+    <nav class="nav" aria-label="Primary navigation">
+      <a href="#lab">Live Lab</a>
+      <a href="#case-study">Case Study</a>
+      <a href="#architecture">Architecture</a>
+      <a class="github-link" href="https://github.com/samarailly51-pixel/claimpilot-harness">GitHub ↗</a>
     </nav>
-    <div class="hero-content">
-      <div class="eyebrow">Agent evals for insurance claims</div>
-      <h1>Crash-test insurance<br>claim AI agents<br>before production.</h1>
-      <p class="lead">ClaimPilot turns messy claim files into repeatable adversarial tests, then scores whether an agent chose the safe action, cited evidence, requested missing proof, and resisted prompt injection.</p>
-      <div class="actions">
-        <a class="button" href="suite-report.html">Open suite report</a>
-        <a class="button secondary" href="travel-injection-001-leaderboard.html">View leaderboard</a>
-        <a class="button secondary" href="https://github.com/samarailly51-pixel/claimpilot-harness">Star on GitHub</a>
-      </div>
-      <div class="hero-stats" aria-label="Project metrics">
-        <div class="stat"><strong>6</strong><span>adversarial claim cases</span></div>
-        <div class="stat"><strong>17</strong><span>CI tests passing</span></div>
-        <div class="stat"><strong>94.8%</strong><span>demo agent suite score</span></div>
-        <div class="stat"><strong>12</strong><span>risk taxonomy tags</span></div>
-      </div>
-    </div>
   </header>
 
-  <section class="band white" id="suite">
-    <div class="inner">
-      <div class="section-head">
-        <div>
-          <h2>Regression suite, not a happy-path demo.</h2>
-          <p class="muted">Run the full case pack against multiple agents and compare average score, pass rate, and replayable failures.</p>
-        </div>
-        <div class="actions">
-          <a class="button" href="suite-report.html">Inspect report</a>
-          <a class="button secondary" href="suite-results.json">View JSON</a>
-        </div>
-      </div>
-      <div class="suite-grid">
-        <div class="panel">
-          <div class="score-row">
-            <strong>demo</strong>
-            <div class="bar"><div style="width: 94.8%"></div></div>
-            <div class="score">94.8%</div>
-          </div>
-          <div class="score-row">
-            <strong>risky</strong>
-            <div class="bar"><div class="bad" style="width: 13.2%"></div></div>
-            <div class="score">13.2%</div>
-          </div>
-        </div>
-        <div class="panel">
-          <h3>What the score means</h3>
-          <p class="muted">ClaimPilot checks verdict quality, required findings, missing document requests, evidence citations, forbidden behavior, and prompt-injection resistance. Each report links back to the exact replay.</p>
-          <code>python -m claimpilot_harness suite cases --agents demo risky</code>
+  <main id="top">
+    <section class="intro">
+      <div class="intro-inner">
+        <p class="kicker">Open-source AI agent evaluation product</p>
+        <h1>Can your claims Agent survive the messy evidence?</h1>
+        <p class="intro-copy">ClaimPilot turns policy exclusions, missing documents, conflicting evidence, privacy traps and prompt injection into repeatable tests. Pick a case, run an Agent, and inspect exactly why it passed or failed.</p>
+        <div class="signal-row" aria-label="Project metrics">
+          <div class="signal"><strong>6</strong><span>adversarial cases</span></div>
+          <div class="signal"><strong>12</strong><span>risk patterns</span></div>
+          <div class="signal"><strong>94.8</strong><span>safe baseline score</span></div>
+          <div class="signal"><strong>17</strong><span>automated tests</span></div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="band" id="cases">
-    <div class="inner">
-      <div class="section-head">
-        <div>
-          <h2>Browse the case gallery.</h2>
-          <p class="muted">Filter the benchmark by risk tag, compare baseline scores, and open the exact replay behind each result.</p>
+    <section class="workspace-band" id="lab">
+      <div class="workspace">
+        <div class="workspace-head">
+          <div class="workspace-title"><span class="live-dot"></span> Evaluation workspace</div>
+          <div class="workspace-meta">Interactive benchmark simulation · deterministic results</div>
+        </div>
+        <div class="workspace-grid">
+          <aside class="rail" aria-label="Evaluation controls">
+            <div class="field">
+              <label class="label" for="caseSelect">Claim scenario</label>
+              <select id="caseSelect"></select>
+            </div>
+            <div class="field">
+              <span class="label">Agent under test</span>
+              <div class="agent-options">
+                <button class="agent-option active" type="button" data-agent="demo" aria-pressed="true">
+                  <span class="agent-radio"></span><span><strong>Cautious Agent</strong><small>Evidence-grounded</small></span><span class="badge">baseline</span>
+                </button>
+                <button class="agent-option" type="button" data-agent="risky" aria-pressed="false">
+                  <span class="agent-radio"></span><span><strong>Risky Agent</strong><small>Approval-biased</small></span><span class="badge risk">red team</span>
+                </button>
+              </div>
+            </div>
+            <div class="field">
+              <span class="label">Risk coverage</span>
+              <div class="case-tags" id="caseTags"></div>
+            </div>
+            <div class="field"><span class="badge" id="severityBadge"></span></div>
+            <button class="run-button" id="runButton" type="button">Run evaluation</button>
+            <div class="shortcut">Ctrl + Enter</div>
+          </aside>
+
+          <section class="stage" aria-label="Claim evidence and evaluation progress">
+            <div class="case-head">
+              <div><span class="case-id" id="caseId"></span><h2 id="caseTitle"></h2><span class="workspace-meta" id="claimantMeta"></span></div>
+              <div class="amount"><strong id="claimAmount"></strong><span>claim amount</span></div>
+            </div>
+            <div class="pipeline" aria-label="Evaluation pipeline">
+              <div class="pipe-step">Load evidence</div>
+              <div class="pipe-step">Inspect risks</div>
+              <div class="pipe-step">Score decision</div>
+              <div class="pipe-step">Build replay</div>
+            </div>
+            <h3 class="section-label">Evidence bundle</h3>
+            <div class="evidence-list" id="evidenceList"></div>
+            <div class="console" id="console" aria-live="polite"><span style="color:#7fa393">Ready. Select a case and agent, then run the evaluation.</span></div>
+          </section>
+
+          <aside class="inspector" aria-label="Evaluation result">
+            <div>
+              <span class="label">Evaluation result</span>
+              <div class="score-block">
+                <div class="score-top"><div class="score-value" id="scoreValue"></div><span class="verdict" id="verdict"></span></div>
+                <div class="score-bar"><div id="scoreFill"></div></div>
+                <div class="workspace-meta" style="margin-top:8px" id="agentName"></div>
+              </div>
+              <div class="metric-list" id="metricList"></div>
+            </div>
+            <div>
+              <span class="label">Key findings</span>
+              <div class="finding-list" id="findingList"></div>
+              <div class="inspector-actions">
+                <a class="run-button" id="replayLink" href="suite-report.html">Open full replay ↗</a>
+                <a class="secondary-button" href="suite-report.html">View benchmark suite</a>
+              </div>
+            </div>
+          </aside>
         </div>
       </div>
-      <div class="filter-bar" id="tagFilters" aria-label="Risk tag filters"></div>
-      <div class="case-grid" id="caseGallery" aria-live="polite"></div>
-    </div>
-  </section>
+    </section>
 
-  <section class="band white" id="coverage">
-    <div class="inner">
-      <div class="section-head">
-        <div>
-          <h2>Coverage matrix.</h2>
-          <p class="muted">A compact view of which insurance lines exercise each reusable risk pattern.</p>
+    <section class="band white" id="case-study">
+      <div class="inner">
+        <div class="section-head">
+          <h2>From impressive Agent demo to measurable product reliability.</h2>
+          <p>这是一个完整的 AI 产品闭环：从业务风险建模，到评测指标、交互体验、工程接入与持续回归，而不只是调用一次大模型 API。</p>
         </div>
-        <div class="actions">
-          <a class="button" href="https://github.com/samarailly51-pixel/claimpilot-harness/blob/main/docs/risk-taxonomy.md">Risk taxonomy</a>
-        </div>
-      </div>
-      <div class="matrix-wrap">
-        <table class="matrix" id="coverageMatrix">
-          <thead><tr><th>Risk tag</th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <section class="band white" id="workflow">
-    <div class="inner">
-      <div class="section-head">
-        <div>
-          <h2>How the harness works.</h2>
-          <p class="muted">The framework is adapter-first and case-pack-first, so teams can plug in real agents without changing the evaluation surface.</p>
+        <div class="proof-grid">
+          <article class="proof"><span class="proof-number">01 · Product thesis</span><h3>The problem is trust, not fluency.</h3><p>理赔 Agent 真正的上线门槛不是“回答是否流畅”，而是在证据冲突、材料缺失和恶意输入下，能否做出安全、可解释、可复盘的下一步决策。</p><ul><li>定义核心用户：AI 产品、风控、理赔运营、算法工程</li><li>把模糊的“可靠性”拆成可验证指标</li><li>用 risky baseline 暴露系统性失败模式</li></ul></article>
+          <article class="proof"><span class="proof-number">02 · Evaluation design</span><h3>Deterministic scoring</h3><p>按业务结论、关键风险、补充材料、证据引用、禁止行为和注入防护打分，结果可重复、可进入 CI。</p></article>
+          <article class="proof"><span class="proof-number">03 · Product experience</span><h3>Replay before leaderboard</h3><p>不仅告诉团队“得了多少分”，还展示 Agent 看到了什么、漏掉了什么，以及为什么失败。</p></article>
+          <article class="proof"><span class="proof-number">04 · Integration</span><h3>Adapter-first</h3><p>支持 OpenAI-compatible、HTTP service 与 command adapter，真实 Agent 无需改动评测面。</p></article>
+          <article class="proof"><span class="proof-number">05 · Delivery</span><h3>Regression-ready</h3><p>CLI、JSON artifacts、GitHub Actions、Pages 自动发布与 17 项测试组成持续交付链路。</p></article>
         </div>
       </div>
-      <div class="flow">
-        <div class="panel"><div class="step-number">1</div><h3>Load case pack</h3><p class="muted">Structured JSON cases define claimant context, policy constraints, evidence, traps, and expected safe behavior.</p></div>
-        <div class="panel"><div class="step-number">2</div><h3>Connect agent</h3><p class="muted">Use built-in baselines, command adapters, HTTP services, or OpenAI-compatible chat completions endpoints.</p></div>
-        <div class="panel"><div class="step-number">3</div><h3>Score decisions</h3><p class="muted">Deterministic scoring checks business action, evidence grounding, missing documents, and safety failures.</p></div>
-        <div class="panel"><div class="step-number">4</div><h3>Replay failures</h3><p class="muted">HTML reports show the evidence timeline, decision JSON, scoring breakdown, and exact weak points.</p></div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <footer>
-    <div class="inner">
-      <div>ClaimPilot Harness · production-readiness evals for claim agents</div>
-      <div>
-        <a href="https://github.com/samarailly51-pixel/claimpilot-harness/blob/main/docs/zh-CN.md">中文介绍</a>
-        <a href="https://github.com/samarailly51-pixel/claimpilot-harness/blob/main/docs/evaluation-methodology.md">Methodology</a>
-        <a href="https://github.com/samarailly51-pixel/claimpilot-harness">GitHub</a>
-      </div>
-    </div>
-  </footer>
-  <script>
-    const fallbackResults = [];
-    let galleryCases = [];
-    let activeTag = "all";
-
-    async function loadSuiteResults() {
-      try {
-        const response = await fetch("suite-results.json", { cache: "no-store" });
-        if (!response.ok) throw new Error("suite-results unavailable");
-        const payload = await response.json();
-        return payload.results || fallbackResults;
-      } catch (error) {
-        return fallbackResults;
-      }
-    }
-
-    function groupCases(results) {
-      const map = new Map();
-      for (const result of results) {
-        if (!map.has(result.case_id)) {
-          map.set(result.case_id, {
-            id: result.case_id,
-            title: result.case_title,
-            line: result.line,
-            severity: result.severity,
-            tags: result.tags || [],
-            agents: {}
-          });
-        }
-        map.get(result.case_id).agents[result.agent] = result;
-      }
-      return Array.from(map.values());
-    }
-
-    function renderFilters(cases) {
-      const tags = Array.from(new Set(cases.flatMap((item) => item.tags))).sort();
-      const container = document.getElementById("tagFilters");
-      container.innerHTML = "";
-      const all = document.createElement("button");
-      all.className = "filter-button active";
-      all.type = "button";
-      all.textContent = "all cases";
-      all.dataset.tag = "all";
-      container.appendChild(all);
-      for (const tag of tags) {
-        const button = document.createElement("button");
-        button.className = "filter-button";
-        button.type = "button";
-        button.textContent = tag;
-        button.dataset.tag = tag;
-        container.appendChild(button);
-      }
-      container.addEventListener("click", (event) => {
-        const button = event.target.closest("button[data-tag]");
-        if (!button) return;
-        activeTag = button.dataset.tag;
-        container.querySelectorAll(".filter-button").forEach((item) => item.classList.toggle("active", item === button));
-        renderGallery(galleryCases);
-      });
-    }
-
-    function renderGallery(cases) {
-      const container = document.getElementById("caseGallery");
-      const visible = activeTag === "all" ? cases : cases.filter((item) => item.tags.includes(activeTag));
-      container.innerHTML = visible.map(renderCaseCard).join("");
-    }
-
-    function renderCaseCard(item) {
-      const demo = item.agents.demo;
-      const risky = item.agents.risky;
-      const bestReplay = demo?.replay || risky?.replay || "suite-report.html";
-      return `<article class="panel case">
-        <div>
-          <div class="case-meta">
-            <span class="pill">${escapeHtml(item.line)}</span>
-            <span class="pill">${escapeHtml(item.severity)}</span>
-          </div>
-          <div class="case-title">${escapeHtml(item.id)}</div>
-          <p class="muted">${escapeHtml(item.title)}</p>
-          <div class="tag-list">${item.tags.map((tag) => `<span class="pill">${escapeHtml(tag)}</span>`).join("")}</div>
+    <section class="band" id="architecture">
+      <div class="inner">
+        <div class="section-head">
+          <h2>A small system with a production-shaped architecture.</h2>
+          <p>同一份结构化 case pack 驱动本地 CLI、Agent 适配器、确定性评分、HTML replay 和 GitHub Pages 产品 Demo。</p>
         </div>
-        <div>
-          <div class="score-strip">
-            ${renderMiniScore("demo", demo)}
-            ${renderMiniScore("risky", risky)}
-          </div>
-          <div class="case-actions" style="margin-top: 12px;">
-            <a class="button secondary" href="${escapeHtml(bestReplay)}">Open replay</a>
-          </div>
+        <div class="architecture" aria-label="ClaimPilot architecture">
+          <div class="arch-step"><span class="proof-number">INPUT</span><strong>Adversarial case pack</strong><p>Policy, claimant context, evidence, traps and expected safe behavior.</p></div>
+          <div class="arch-step"><span class="proof-number">RUNTIME</span><strong>Agent adapters</strong><p>Built-in baselines, HTTP services, commands and OpenAI-compatible endpoints.</p></div>
+          <div class="arch-step"><span class="proof-number">EVAL</span><strong>Scoring engine</strong><p>Repeatable business and safety checks with CI quality gates.</p></div>
+          <div class="arch-step"><span class="proof-number">OUTPUT</span><strong>Replay + artifacts</strong><p>Human-readable decisions and machine-readable regression results.</p></div>
         </div>
-      </article>`;
-    }
+      </div>
+    </section>
 
-    function renderMiniScore(label, result) {
-      if (!result) return `<div class="mini-score"><span>${escapeHtml(label)}</span><strong>-</strong></div>`;
-      return `<div class="mini-score"><span>${escapeHtml(label)} / ${escapeHtml(result.verdict)}</span><strong>${Number(result.score).toFixed(1)}%</strong></div>`;
-    }
+    <section class="band white">
+      <div class="inner portfolio-note">
+        <div><p class="kicker" style="color:var(--blue)">Built as an AI product case study</p><h2>ClaimPilot is the test range, not another claims chatbot.</h2></div>
+        <div><p>我把这个项目作为一个真实产品问题来设计：如何帮助团队判断 Agent 是否具备上线条件，并让产品、业务、风控和工程看到同一份证据。</p><p>当前版本覆盖 5 个险种、6 个对抗案例与 12 类风险模式。下一阶段将加入真实模型实验追踪、人工复核和 LLM-as-judge 混合评测。</p><div class="link-row"><a class="run-button" style="width:auto" href="https://github.com/samarailly51-pixel/claimpilot-harness">Explore the source ↗</a><a class="secondary-button" href="https://github.com/samarailly51-pixel/claimpilot-harness/blob/main/docs/evaluation-methodology.md">Read methodology</a></div></div>
+      </div>
+    </section>
+  </main>
 
-    function renderCoverageMatrix(cases) {
-      const lines = Array.from(new Set(cases.map((item) => item.line))).sort();
-      const tags = Array.from(new Set(cases.flatMap((item) => item.tags))).sort();
-      const table = document.getElementById("coverageMatrix");
-      table.querySelector("thead tr").innerHTML = `<th>Risk tag</th>${lines.map((line) => `<th>${escapeHtml(line)}</th>`).join("")}`;
-      table.querySelector("tbody").innerHTML = tags.map((tag) => {
-        const cells = lines.map((line) => {
-          const count = cases.filter((item) => item.line === line && item.tags.includes(tag)).length;
-          return `<td>${count ? `<span class="mark">${count}</span>` : ""}</td>`;
-        }).join("");
-        return `<tr><th>${escapeHtml(tag)}</th>${cells}</tr>`;
-      }).join("");
-    }
-
-    function escapeHtml(value) {
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    loadSuiteResults().then((results) => {
-      galleryCases = groupCases(results);
-      renderFilters(galleryCases);
-      renderGallery(galleryCases);
-      renderCoverageMatrix(galleryCases);
-    });
-  </script>
+  <footer><div class="inner"><span>ClaimPilot Harness · Built by Zuo Chun</span><span><a href="suite-report.html">Suite report</a> · <a href="https://github.com/samarailly51-pixel/claimpilot-harness">GitHub</a></span></div></footer>
+  <script src="app.js"></script>
 </body>
 </html>

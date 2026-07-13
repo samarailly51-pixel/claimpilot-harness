@@ -29,10 +29,10 @@
         <h1>Can your claims Agent survive the messy evidence?</h1>
         <p class="intro-copy">ClaimPilot turns policy exclusions, missing documents, conflicting evidence, privacy traps and prompt injection into repeatable tests. Pick a case, run an Agent, and inspect exactly why it passed or failed.</p>
         <div class="signal-row" aria-label="Project metrics">
-          <div class="signal"><strong>6</strong><span>adversarial cases</span></div>
-          <div class="signal"><strong>12</strong><span>risk patterns</span></div>
-          <div class="signal"><strong>94.8</strong><span>safe baseline score</span></div>
-          <div class="signal"><strong>17</strong><span>automated tests</span></div>
+          <div class="signal"><strong id="caseCount">7</strong><span>adversarial cases</span></div>
+          <div class="signal"><strong id="riskCount">16</strong><span>risk patterns</span></div>
+          <div class="signal"><strong id="baselineScore">--</strong><span>safe baseline score</span></div>
+          <div class="signal"><strong>18</strong><span>automated tests</span></div>
         </div>
       </div>
     </section>
@@ -64,6 +64,11 @@
               <span class="label">Risk coverage</span>
               <div class="case-tags" id="caseTags"></div>
             </div>
+            <a class="skill-chip" href="https://github.com/samarailly51-pixel/claimpilot-harness/blob/main/skills/bodily-injury-claims-processing/SKILL.md">
+              <span>Domain Skill Pack</span>
+              <strong>Bodily Injury Claims</strong>
+              <small>Causation · treatment · wage loss · escalation</small>
+            </a>
             <div class="field"><span class="badge" id="severityBadge"></span></div>
             <button class="run-button" id="runButton" type="button">Run evaluation</button>
             <div class="shortcut">Ctrl + Enter</div>
@@ -119,7 +124,8 @@
           <article class="proof"><span class="proof-number">02 · Evaluation design</span><h3>Deterministic scoring</h3><p>按业务结论、关键风险、补充材料、证据引用、禁止行为和注入防护打分，结果可重复、可进入 CI。</p></article>
           <article class="proof"><span class="proof-number">03 · Product experience</span><h3>Replay before leaderboard</h3><p>不仅告诉团队“得了多少分”，还展示 Agent 看到了什么、漏掉了什么，以及为什么失败。</p></article>
           <article class="proof"><span class="proof-number">04 · Integration</span><h3>Adapter-first</h3><p>支持 OpenAI-compatible、HTTP service 与 command adapter，真实 Agent 无需改动评测面。</p></article>
-          <article class="proof"><span class="proof-number">05 · Delivery</span><h3>Regression-ready</h3><p>CLI、JSON artifacts、GitHub Actions、Pages 自动发布与 17 项测试组成持续交付链路。</p></article>
+          <article class="proof"><span class="proof-number">05 · Delivery</span><h3>Regression-ready</h3><p>CLI、JSON artifacts、GitHub Actions、Pages 自动发布与 18 项测试组成持续交付链路。</p></article>
+          <article class="proof"><span class="proof-number">06 · Domain skill</span><h3>Bodily injury claims processing</h3><p>把人伤理赔中的事故因果关系、治疗时间线、医疗材料、误工损失与人工升级规则，转化为可复用 Skill 和可回归案例。</p></article>
         </div>
       </div>
     </section>
@@ -142,7 +148,7 @@
     <section class="band white">
       <div class="inner portfolio-note">
         <div><p class="kicker" style="color:var(--blue)">Built as an AI product case study</p><h2>ClaimPilot is the test range, not another claims chatbot.</h2></div>
-        <div><p>我把这个项目作为一个真实产品问题来设计：如何帮助团队判断 Agent 是否具备上线条件，并让产品、业务、风控和工程看到同一份证据。</p><p>当前版本覆盖 5 个险种、6 个对抗案例与 12 类风险模式。下一阶段将加入真实模型实验追踪、人工复核和 LLM-as-judge 混合评测。</p><div class="link-row"><a class="run-button" style="width:auto" href="https://github.com/samarailly51-pixel/claimpilot-harness">Explore the source ↗</a><a class="secondary-button" href="https://github.com/samarailly51-pixel/claimpilot-harness/blob/main/docs/evaluation-methodology.md">Read methodology</a></div></div>
+        <div><p>我把这个项目作为一个真实产品问题来设计：如何帮助团队判断 Agent 是否具备上线条件，并让产品、业务、风控和工程看到同一份证据。</p><p>当前版本覆盖 5 个险种、7 个对抗案例与 16 类风险模式，并加入车险人伤理赔 Domain Skill Pack。下一阶段将加入真实模型实验追踪、人工复核和 LLM-as-judge 混合评测。</p><div class="link-row"><a class="run-button" style="width:auto" href="https://github.com/samarailly51-pixel/claimpilot-harness">Explore the source ↗</a><a class="secondary-button" href="https://github.com/samarailly51-pixel/claimpilot-harness/blob/main/docs/evaluation-methodology.md">Read methodology</a></div></div>
       </div>
     </section>
   </main>

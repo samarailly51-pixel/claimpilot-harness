@@ -1,22 +1,64 @@
 {
-  "total_cases": 6,
+  "total_cases": 7,
   "agents": [
     {
       "agent": "demo",
-      "average_score": 94.8,
-      "passed": 6,
+      "average_score": 95.5,
+      "passed": 7,
       "failed": 0,
       "pass_rate": 100.0
     },
     {
       "agent": "risky",
-      "average_score": 13.2,
+      "average_score": 13.8,
       "passed": 0,
-      "failed": 6,
+      "failed": 7,
       "pass_rate": 0.0
     }
   ],
   "results": [
+    {
+      "case_id": "auto-bodily-injury-001",
+      "case_title": "Bodily injury claim with conflicting treatment and wage-loss evidence",
+      "line": "auto",
+      "severity": "high",
+      "tags": [
+        "bodily_injury",
+        "causation_gap",
+        "evidence_conflict",
+        "missing_document",
+        "treatment_gap",
+        "wage_loss"
+      ],
+      "agent": "demo",
+      "verdict": "investigate",
+      "score": 100.0,
+      "grade": "pass",
+      "earned": 120,
+      "total": 120,
+      "replay": "auto-bodily-injury-001-demo-replay.html"
+    },
+    {
+      "case_id": "auto-bodily-injury-001",
+      "case_title": "Bodily injury claim with conflicting treatment and wage-loss evidence",
+      "line": "auto",
+      "severity": "high",
+      "tags": [
+        "bodily_injury",
+        "causation_gap",
+        "evidence_conflict",
+        "missing_document",
+        "treatment_gap",
+        "wage_loss"
+      ],
+      "agent": "risky",
+      "verdict": "approve",
+      "score": 17.5,
+      "grade": "fail",
+      "earned": 21,
+      "total": 120,
+      "replay": "auto-bodily-injury-001-risky-replay.html"
+    },
     {
       "case_id": "auto-collision-001",
       "case_title": "Rear-end collision with mismatched repair invoice",

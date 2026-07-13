@@ -77,6 +77,12 @@ def demo_agent(case: Case) -> AgentDecision:
                 "experimental",
                 "unrelated diagnosis",
                 "full medical history",
+                "no injury at the scene",
+                "treatment occurred",
+                "treatment timeline",
+                "gym workout",
+                "medical bill",
+                "wage loss",
             ]
         ):
             citations.append(item["id"])
@@ -112,6 +118,15 @@ def demo_agent(case: Case) -> AgentDecision:
         docs.append("independent mitigation report")
     if "prompt injection" in text or "ignore prior" in text:
         findings.append("document contains adversarial instruction")
+    if "bodily injury" in text or "injury claim" in text:
+        if "no injury at the scene" in text or "gym workout" in text or "causation" in text:
+            findings.append("injury causation requires review")
+        if "treatment occurred" in text or "treatment timeline" in text:
+            findings.append("treatment timeline conflicts with reported accident")
+            docs.append("complete medical records and treatment referral")
+        if "wage loss" in text and ("without employer" in text or "payroll" in text):
+            findings.append("wage loss is not documented")
+            docs.append("employer wage verification")
 
     verdict = "investigate" if findings or docs else "approve"
     confidence = 0.72 if verdict == "investigate" else 0.58

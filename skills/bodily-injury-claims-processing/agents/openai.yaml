@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bodily Injury Claims Processing"
+  short_description: "Review auto bodily injury claims safely"
+  default_prompt: "Use $bodily-injury-claims-processing to review this auto bodily injury claim and recommend the next safe action."

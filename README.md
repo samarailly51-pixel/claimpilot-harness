@@ -18,9 +18,9 @@ It is not another claim-processing agent. It is the test range for them.
 
 | Signal | Current v0.1.1 |
 | --- | --- |
-| Case pack | 6 adversarial claim cases across auto, health, travel, pet, and property |
-| Risk taxonomy | 12 reusable tags including `prompt_injection`, `missing_document`, `policy_exclusion`, and `evidence_conflict` |
-| Baselines | `demo` agent: 94.8% suite average; `risky` baseline: 13.2% |
+| Case pack | 7 adversarial claim cases across auto, health, travel, pet, and property |
+| Risk taxonomy | 16 reusable tags including `bodily_injury`, `causation_gap`, `prompt_injection`, and `evidence_conflict` |
+| Baselines | `demo` agent: 95.5% suite average; `risky` baseline: 13.8% |
 | Agent adapters | Built-in, command, HTTP service, OpenAI-compatible `/v1/chat/completions` |
 | Outputs | Replay HTML, leaderboard, suite report, machine-readable `suite-results.json` |
 | Automation | GitHub Actions CI and Pages demo rebuild on every push |
@@ -90,13 +90,13 @@ python -m claimpilot_harness suite cases --agents demo risky
 ```
 
 ```txt
-Cases:  6
+Cases:  7
 Report: runs/suite-report.html
 
 Agent        Avg Score  Pass Rate
 ------------ ---------- ----------
-demo             94.8%     100.0%
-risky            13.2%       0.0%
+demo             95.5%     100.0%
+risky            13.8%       0.0%
 ```
 
 ## What A Replay Shows
@@ -115,6 +115,7 @@ The replay report is designed for product, risk, and engineering review:
 | Case | Line | What It Tests |
 | --- | --- | --- |
 | `auto-collision-001` | Auto | Repair invoice conflicts with damage photos and claimant chat. |
+| `auto-bodily-injury-001` | Auto BI | Causation, treatment chronology, medical-record, and wage-loss conflicts. |
 | `health-bill-001` | Health | Possible excluded cosmetic procedure without medical necessity proof. |
 | `medical-privacy-injection-001` | Health | Medical necessity ambiguity plus privacy lure and hidden prompt injection. |
 | `travel-injection-001` | Travel | Missing official delay proof plus prompt injection hidden in uploaded evidence. |
@@ -123,6 +124,10 @@ The replay report is designed for product, risk, and engineering review:
 
 See the [Risk Taxonomy](docs/risk-taxonomy.md) for the reusable failure-mode tags behind the case pack.
 
+## Domain Skill Pack
+
+[Bodily Injury Claims Processing in Auto Insurance](skills/bodily-injury-claims-processing/SKILL.md) turns domain review knowledge into an executable workflow for intake, causation analysis, treatment chronology, medical evidence, wage-loss verification, and safe human escalation. The paired `auto-bodily-injury-001` case verifies that an Agent does not auto-approve from claim amount alone when material evidence conflicts or is missing.
+
 Generate a coverage catalog for the case pack:
 
 ```bash
@@ -130,11 +135,11 @@ python -m claimpilot_harness catalog cases
 ```
 
 ```txt
-Cases: 6
-Lines: auto=1, health=2, pet=1, property=1, travel=1
-Severities: critical=2, high=2, medium=2
-Tags: claimant_contradiction=1, coverage_timing=1, evidence_conflict=2, invoice_mismatch=1, medical_necessity=2, missing_document=4, policy_exclusion=2, pre_existing_condition=1, privacy_lure=1, prompt_injection=2, scope_inflation=1, untrusted_evidence=1
-Traps: privacy_lure=1, prompt_injection=2
+Cases: 7
+Lines: auto=2, health=2, pet=1, property=1, travel=1
+Severities: critical=2, high=3, medium=2
+Tags: bodily_injury=1, causation_gap=1, claimant_contradiction=1, coverage_timing=1, evidence_conflict=3, invoice_mismatch=1, medical_necessity=2, missing_document=5, policy_exclusion=2, pre_existing_condition=1, privacy_lure=1, prompt_injection=2, scope_inflation=1, treatment_gap=1, untrusted_evidence=1, wage_loss=1
+Traps: privacy_lure=1, prompt_injection=2, threshold_shortcut=1
 ```
 
 ## Agent Interface

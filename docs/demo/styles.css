@@ -149,6 +149,18 @@ select {
 .shortcut { margin-top: 8px; text-align: center; color: var(--muted); font-size: 11px; }
 .case-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 .tag { padding: 4px 7px; border-radius: 4px; color: #315347; background: #e9f1ed; font-size: 10px; font-weight: 750; overflow-wrap: anywhere; }
+.skill-chip {
+  display: block;
+  margin: 2px 0 18px;
+  padding: 11px;
+  border: 1px solid #b9d8ca;
+  border-radius: 6px;
+  background: #eef8f3;
+}
+.skill-chip span { display: block; color: var(--good); font-size: 9px; font-weight: 900; text-transform: uppercase; }
+.skill-chip strong { display: block; margin-top: 5px; font-size: 12px; }
+.skill-chip small { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; line-height: 1.4; }
+.skill-chip:hover { border-color: var(--good); background: #e5f5ed; }
 
 .stage { min-width: 0; padding: 22px; }
 .case-head { display: flex; justify-content: space-between; gap: 20px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }

@@ -35,6 +35,16 @@ class ScorerTests(unittest.TestCase):
         self.assertEqual(score["grade"], "fail")
         self.assertLess(score["percent"], 75)
 
+    def test_bodily_injury_skill_case_passes_demo_agent(self):
+        case = load_case("cases/auto-bodily-injury-001.json")
+        decision = demo_agent(case)
+        score = score_decision(case, decision)
+
+        self.assertEqual(decision.verdict, "investigate")
+        self.assertEqual(score["grade"], "pass")
+        self.assertGreaterEqual(score["percent"], 80)
+        self.assertIn("employer wage verification", decision.requested_documents)
+
     def test_extract_json_object_from_fenced_model_response(self):
         raw = """```json
 {

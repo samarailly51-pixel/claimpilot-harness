@@ -36,9 +36,21 @@ async function bootstrap() {
   ]);
   state.cases = await caseResponse.json();
   state.results = (await resultResponse.json()).results;
+  renderProjectMetrics();
   renderCaseOptions();
   bindEvents();
   renderAll();
+}
+
+function renderProjectMetrics() {
+  const tags = new Set(state.cases.flatMap((item) => item.tags));
+  const demoResults = state.results.filter((item) => item.agent === "demo");
+  const average = demoResults.length
+    ? demoResults.reduce((total, item) => total + Number(item.score), 0) / demoResults.length
+    : 0;
+  $("#caseCount").textContent = state.cases.length;
+  $("#riskCount").textContent = tags.size;
+  $("#baselineScore").textContent = average.toFixed(1);
 }
 
 function renderCaseOptions() {

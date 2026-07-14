@@ -104,7 +104,7 @@ class CliTests(unittest.TestCase):
 
         payload = json.loads(completed.stdout)
         self.assertTrue(payload["ok"])
-        self.assertEqual(payload["total"], 7)
+        self.assertEqual(payload["total"], 10)
         self.assertEqual(payload["failed"], 0)
 
     def test_validate_rejects_unknown_citation(self):
@@ -161,7 +161,7 @@ class CliTests(unittest.TestCase):
         )
 
         payload = json.loads(completed.stdout)
-        self.assertEqual(payload["total_cases"], 7)
+        self.assertEqual(payload["total_cases"], 10)
         self.assertIn("auto", payload["lines"])
         self.assertIn("travel", payload["lines"])
         self.assertIn("prompt_injection", payload["tags"])
@@ -249,7 +249,7 @@ class CliTests(unittest.TestCase):
             )
 
             payload = json.loads(completed.stdout)
-            self.assertEqual(payload["total_cases"], 7)
+            self.assertEqual(payload["total_cases"], 10)
             self.assertEqual(payload["agents"][0]["agent"], "demo")
             self.assertGreater(payload["agents"][0]["average_score"], payload["agents"][1]["average_score"])
             self.assertTrue(Path(payload["results_file"]).exists())

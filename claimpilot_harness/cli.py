@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 from .catalog import build_catalog, format_catalog_markdown, format_catalog_text
+from .experiments import run_arena
 from .runner import compare_agents, run_case
 from .suite import evaluate_quality_gate, run_suite
 from .validator import validate_path, validation_summary
@@ -67,6 +68,17 @@ def main() -> None:
     suite_parser.add_argument("--json", action="store_true", help="Print machine-readable suite result")
     suite_parser.add_argument("--min-average-score", type=float, help="Fail if any agent average score is below this percent")
     suite_parser.add_argument("--min-pass-rate", type=float, help="Fail if any agent pass rate is below this percent")
+
+    arena_parser = subparsers.add_parser("arena", help="Run named, traceable model profiles across a case pack")
+    arena_parser.add_argument("cases", nargs="?", default="cases", help="Case JSON file or directory")
+    arena_parser.add_argument("--config", required=True, help="JSON file containing named agent profiles")
+    arena_parser.add_argument("--out", default="runs/arena", help="Directory for arena artifacts")
+    arena_parser.add_argument(
+        "--require-all",
+        action="store_true",
+        help="Fail instead of marking profiles skipped when credentials or endpoints are unavailable",
+    )
+    arena_parser.add_argument("--json", action="store_true", help="Print machine-readable arena result")
 
     args = parser.parse_args()
     try:
@@ -205,6 +217,30 @@ def main() -> None:
                             print(f"- {failure['agent']}: {'; '.join(failure['reasons'])}")
             if not gate["ok"]:
                 raise SystemExit(1)
+        elif args.command == "arena":
+            arena = run_arena(
+                args.cases,
+                args.config,
+                args.out,
+                skip_unavailable=not args.require_all,
+            )
+            if args.json:
+                print(json.dumps(arena, ensure_ascii=False, indent=2))
+            else:
+                print(f"Experiment: {arena['experiment_id']}")
+                print(f"Dataset:    {arena['dataset_sha256']}")
+                print(f"Cases:      {arena['total_cases']}")
+                print(f"JSON:       {arena['results_file']}")
+                print("")
+                print("Profile                  Type             Avg Score  Pass Rate  Status")
+                print("------------------------ ---------------- ---------- ---------- --------")
+                for item in arena["profiles"]:
+                    average = "-" if item["average_score"] is None else f"{item['average_score']}%"
+                    pass_rate = "-" if item["pass_rate"] is None else f"{item['pass_rate']}%"
+                    print(
+                        f"{item['display_name'][:24]:<24} {item['run_type']:<16} "
+                        f"{average:>10} {pass_rate:>10} {item['status']}"
+                    )
     except (RuntimeError, ValueError) as exc:
         print(f"claimpilot: error: {exc}", file=sys.stderr)
         raise SystemExit(2) from exc

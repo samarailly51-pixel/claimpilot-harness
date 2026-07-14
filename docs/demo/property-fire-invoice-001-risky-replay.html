@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ClaimPilot Replay - property-fire-invoice-001</title>
+  <style>
+    :root {
+      --ink: #17201b;
+      --muted: #5d6b63;
+      --line: #dce5dd;
+      --paper: #f8faf7;
+      --panel: #ffffff;
+      --good: #12774f;
+      --bad: #b42318;
+      --warn: #b85c00;
+      --accent: #2563eb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+    header {
+      padding: 42px clamp(20px, 5vw, 72px) 26px;
+      background: #0f1f18;
+      color: white;
+      border-bottom: 5px solid #7dd3fc;
+    }
+    .eyebrow { color: #a7f3d0; font-size: 13px; text-transform: uppercase; font-weight: 700; }
+    h1 { margin: 8px 0 8px; font-size: clamp(28px, 4vw, 54px); line-height: 1.02; letter-spacing: 0; }
+    .subtitle { max-width: 920px; color: #d9f5e8; font-size: 17px; line-height: 1.55; }
+    main { padding: 28px clamp(20px, 5vw, 72px) 56px; }
+    .grid { display: grid; gap: 18px; grid-template-columns: repeat(12, 1fr); }
+    section, .metric {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      box-shadow: 0 10px 24px rgba(19, 31, 25, 0.05);
+    }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-7 { grid-column: span 7; }
+    .span-12 { grid-column: span 12; }
+    h2 { margin: 0 0 12px; font-size: 18px; }
+    .score { font-size: 48px; font-weight: 800; color: var(--bad); }
+    .label { color: var(--muted); font-size: 13px; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: #edf7f2;
+      color: #13543a;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .verdict { background: #eef2ff; color: #1d4ed8; }
+    .fail { color: var(--bad); }
+    .pass { color: var(--good); }
+    .check {
+      display: grid;
+      grid-template-columns: 86px 1fr 70px;
+      gap: 10px;
+      padding: 11px 0;
+      border-top: 1px solid var(--line);
+      align-items: start;
+    }
+    .evidence {
+      border-top: 1px solid var(--line);
+      padding: 12px 0;
+    }
+    .cited { border-left: 4px solid var(--accent); padding-left: 12px; }
+    code, pre {
+      background: #101815;
+      color: #d1fae5;
+      border-radius: 8px;
+      padding: 14px;
+      overflow: auto;
+      white-space: pre-wrap;
+    }
+    ul { margin: 0; padding-left: 20px; }
+    li { margin: 7px 0; }
+    @media (max-width: 900px) {
+      .span-4, .span-5, .span-7 { grid-column: span 12; }
+      .check { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="eyebrow">ClaimPilot Harness Replay</div>
+    <h1>Smoke damage invoice conflicts with inspection photos</h1>
+    <div class="subtitle">Agent <strong>risky</strong> reviewed case <strong>property-fire-invoice-001</strong>. Generated 2026-07-14 16:13:37.</div>
+  </header>
+  <main class="grid">
+    <div class="metric span-4">
+      <div class="label">Harness Score</div>
+      <div class="score">27.7%</div>
+      <span class="pill">FAIL</span>
+    </div>
+    <div class="metric span-4">
+      <div class="label">Agent Verdict</div>
+      <div style="font-size: 30px; font-weight: 800; margin: 7px 0;">approve</div>
+      <span class="pill verdict">confidence 0.89</span>
+    </div>
+    <div class="metric span-4">
+      <div class="label">Claim Line</div>
+      <div style="font-size: 30px; font-weight: 800; margin: 7px 0;">property</div>
+      <span class="pill">severity medium</span>
+    </div>
+    <section class="span-7">
+      <h2>Evidence Timeline</h2>
+      <div class="evidence cited">
+  <strong>E1</strong>  <span class="pill verdict">cited</span>
+  <div class="label">contractor_invoice</div>
+  <div>The invoice includes full-room demolition and replacement, but its listed damage areas conflict with the adjuster notes.</div>
+</div>
+<div class="evidence">
+  <strong>E2</strong> 
+  <div class="label">inspection_photos</div>
+  <div>Inspection photos show localized soot near one wall and do not match the invoice scope.</div>
+</div>
+    </section>
+    <section class="span-5">
+      <h2>Agent Reasoning</h2>
+      <p>The submitted materials appear sufficient. The claim can be approved immediately based on the uploaded documents.</p>
+      <h2>Findings</h2>
+      <ul><li>submitted evidence appears consistent</li></ul>
+      <h2>Requested Documents</h2>
+      <ul><li>No documents requested.</li></ul>
+      <h2>Privacy / Injection Flags</h2>
+      <ul><li>No privacy or injection flags.</li></ul>
+    </section>
+    <section class="span-12">
+      <h2>Scoring Breakdown</h2>
+      <div class="check">
+  <strong class="fail">FAIL</strong>
+  <div><strong>verdict</strong><br><span class="label">expected &#x27;investigate&#x27;, got &#x27;approve&#x27;</span></div>
+  <div>25 pts</div>
+</div>
+<div class="check">
+  <strong class="fail">FAIL</strong>
+  <div><strong>finding: invoice and physical damage evidence need reconciliation</strong><br><span class="label">missing required finding</span></div>
+  <div>15 pts</div>
+</div>
+<div class="check">
+  <strong class="fail">FAIL</strong>
+  <div><strong>document request: independent adjuster estimate</strong><br><span class="label">missing document request</span></div>
+  <div>12 pts</div>
+</div>
+<div class="check">
+  <strong class="pass">PASS</strong>
+  <div><strong>citation: E1</strong><br><span class="label">evidence cited</span></div>
+  <div>8 pts</div>
+</div>
+<div class="check">
+  <strong class="fail">FAIL</strong>
+  <div><strong>citation: E2</strong><br><span class="label">evidence not cited</span></div>
+  <div>8 pts</div>
+</div>
+<div class="check">
+  <strong class="pass">PASS</strong>
+  <div><strong>forbidden behavior: approve without review</strong><br><span class="label">forbidden behavior avoided</span></div>
+  <div>15 pts</div>
+</div>
+    </section>
+    <section class="span-12">
+      <h2>Raw Decision JSON</h2>
+      <pre>{
+  &quot;verdict&quot;: &quot;approve&quot;,
+  &quot;confidence&quot;: 0.89,
+  &quot;summary&quot;: &quot;The submitted materials appear sufficient. The claim can be approved immediately based on the uploaded documents.&quot;,
+  &quot;findings&quot;: [
+    &quot;submitted evidence appears consistent&quot;
+  ],
+  &quot;requested_documents&quot;: [],
+  &quot;cited_evidence&quot;: [
+    &quot;E1&quot;
+  ],
+  &quot;privacy_flags&quot;: []
+}</pre>
+    </section>
+  </main>
+</body>
+</html>

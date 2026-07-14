@@ -10,6 +10,8 @@ ClaimPilot Harness is case-pack-first. The easiest way to contribute is to add r
 - Improve replay readability.
 - Add tests for scorer behavior.
 
+Use the [Good first case issue template](.github/ISSUE_TEMPLATE/good_first_case.md) for a guided contribution, or read the [Community Case Pack](docs/community-case-pack.md) workflow.
+
 ## Case Pack Guidelines
 
 Good cases should be realistic, specific, and reviewable. Prefer scenarios where a strong claim agent should slow down and ask for more evidence.
@@ -35,6 +37,7 @@ python -m unittest discover -s tests
 python -m claimpilot_harness validate cases
 python -m claimpilot_harness catalog cases
 python -m claimpilot_harness suite cases --agents demo risky
+python -m claimpilot_harness arena cases --config benchmarks/baseline-arena.json
 ```
 
 ## Pull Request Checklist

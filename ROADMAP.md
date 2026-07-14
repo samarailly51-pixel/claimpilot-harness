@@ -1,5 +1,13 @@
 # Roadmap
 
+## v0.2 complete
+
+- Traceable Model Arena with named profiles and dataset fingerprints
+- External model disclosure and unavailable-profile handling
+- Human Review Workbench with local persistence and JSON export
+- Ten adversarial cases including bodily injury and workers compensation
+- Community case contribution workflow and good-first-case template
+
 ## v0.1
 
 - Offline CLI runner

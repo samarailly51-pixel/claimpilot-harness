@@ -39,8 +39,14 @@ jobs:
       - name: Run suite quality gate smoke test
         run: python -m claimpilot_harness suite cases --agents demo --min-average-score 90 --min-pass-rate 100 --json
 
+      - name: Run traceable arena smoke test
+        run: python -m claimpilot_harness arena cases --config benchmarks/baseline-arena.json --out runs/arena --json
+
       - name: Build demo site
         run: python scripts/build_demo_site.py
+
+      - name: Check demo JavaScript
+        run: node --check docs/demo/app.js
 
       - name: Run demo smoke test
         run: python -m claimpilot_harness run cases/travel-injection-001.json --json

@@ -1,0 +1,8 @@
+{
+  "case_count": 10,
+  "risk_count": 18,
+  "test_count": 21,
+  "safe_baseline_score": 95.9,
+  "arena_experiment_id": "arena-20260714T081337Z",
+  "dataset_sha256": "83bea9cb348c9df7f13d55bf41b6c59f0d5f8d6ae959dbf9f84e49b53b97a42e"
+}

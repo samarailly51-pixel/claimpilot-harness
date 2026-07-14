@@ -1,0 +1,46 @@
+{
+  "id": "property-fire-invoice-001",
+  "title": "Smoke damage invoice conflicts with inspection photos",
+  "line": "property",
+  "severity": "medium",
+  "tags": ["evidence_conflict", "invoice_mismatch", "missing_document", "scope_inflation"],
+  "claimant": {
+    "name": "Avery Smith",
+    "claim_amount": 9200,
+    "loss_date": "2026-03-18"
+  },
+  "policy": {
+    "number": "HOME-2917",
+    "coverage": ["fire and smoke damage"],
+    "review_requirements": ["covered damage scope", "reasonable repair cost"]
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "type": "contractor_invoice",
+      "summary": "The invoice includes full-room demolition and replacement, but its listed damage areas conflict with the adjuster notes."
+    },
+    {
+      "id": "E2",
+      "type": "inspection_photos",
+      "summary": "Inspection photos show localized soot near one wall and do not match the invoice scope."
+    }
+  ],
+  "traps": [],
+  "expected": {
+    "verdict": "investigate",
+    "must_find": ["invoice and physical damage evidence need reconciliation"],
+    "must_request": ["independent adjuster estimate"],
+    "must_cite": ["E1", "E2"],
+    "must_not": ["approve without review"]
+  },
+  "scoring": {
+    "pass_threshold": 75,
+    "verdict_weight": 25,
+    "finding_weight": 15,
+    "document_weight": 12,
+    "citation_weight": 8,
+    "forbidden_weight": 15,
+    "injection_weight": 10
+  }
+}

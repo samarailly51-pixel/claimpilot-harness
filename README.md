@@ -2,9 +2,9 @@
 
 **Crash-test insurance claim AI agents before production.**
 
-ClaimPilot is an open-source evaluation product for claim AI agents: an interactive reliability lab, adversarial insurance cases, deterministic scoring, replayable reports, and adapter-first agent comparison.
+ClaimPilot is an open-source evaluation product for claim AI agents: a traceable Model Arena, adversarial insurance cases, deterministic scoring, replayable reports, human review, and adapter-first model comparison.
 
-[Interactive product demo](https://samarailly51-pixel.github.io/claimpilot-harness/) · [Suite report](https://samarailly51-pixel.github.io/claimpilot-harness/suite-report.html) · [Connect real agents](docs/connect-real-agents.md) · [中文介绍](docs/zh-CN.md) · [Release v0.1.1](https://github.com/samarailly51-pixel/claimpilot-harness/releases/tag/v0.1.1)
+[Interactive product demo](https://samarailly51-pixel.github.io/claimpilot-harness/) · [Model Arena](docs/model-arena.md) · [Human review](docs/human-review.md) · [Connect real agents](docs/connect-real-agents.md) · [中文介绍](docs/zh-CN.md) · [Release v0.2.0](https://github.com/samarailly51-pixel/claimpilot-harness/releases/tag/v0.2.0)
 
 [![CI Ready](https://img.shields.io/badge/CI-ready-12774f)](.github/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.10%2B-2563eb)](https://www.python.org/)
@@ -16,13 +16,13 @@ ClaimPilot Harness runs messy insurance claim scenarios against AI agents and sh
 
 It is not another claim-processing agent. It is the test range for them.
 
-| Signal | Current v0.1.1 |
+| Signal | Current v0.2.0 |
 | --- | --- |
-| Case pack | 7 adversarial claim cases across auto, health, travel, pet, and property |
-| Risk taxonomy | 16 reusable tags including `bodily_injury`, `causation_gap`, `prompt_injection`, and `evidence_conflict` |
-| Baselines | `demo` agent: 95.5% suite average; `risky` baseline: 13.8% |
+| Case pack | 10 adversarial claim cases across auto, health, travel, pet, property, and workers compensation |
+| Risk taxonomy | 18 reusable tags including `bodily_injury`, `causation_gap`, `prompt_injection`, and `evidence_conflict` |
+| Baselines | cautious rule baseline: 95.9% suite average; risky rule baseline: 16.9% |
 | Agent adapters | Built-in, command, HTTP service, OpenAI-compatible `/v1/chat/completions` |
-| Outputs | Replay HTML, leaderboard, suite report, machine-readable `suite-results.json` |
+| Outputs | Arena snapshot, replay HTML, suite report, human-review JSON, dataset SHA-256 |
 | Automation | GitHub Actions CI and Pages demo rebuild on every push |
 
 ```bash
@@ -90,13 +90,13 @@ python -m claimpilot_harness suite cases --agents demo risky
 ```
 
 ```txt
-Cases:  7
+Cases:  10
 Report: runs/suite-report.html
 
 Agent        Avg Score  Pass Rate
 ------------ ---------- ----------
-demo             95.5%     100.0%
-risky            13.8%       0.0%
+demo             95.9%     100.0%
+risky            16.9%       0.0%
 ```
 
 ## What A Replay Shows
@@ -117,10 +117,13 @@ The replay report is designed for product, risk, and engineering review:
 | `auto-collision-001` | Auto | Repair invoice conflicts with damage photos and claimant chat. |
 | `auto-bodily-injury-001` | Auto BI | Causation, treatment chronology, medical-record, and wage-loss conflicts. |
 | `health-bill-001` | Health | Possible excluded cosmetic procedure without medical necessity proof. |
+| `health-experimental-treatment-001` | Health | Experimental treatment without medical-necessity or authorization support. |
 | `medical-privacy-injection-001` | Health | Medical necessity ambiguity plus privacy lure and hidden prompt injection. |
 | `travel-injection-001` | Travel | Missing official delay proof plus prompt injection hidden in uploaded evidence. |
 | `pet-preexisting-001` | Pet | Symptoms appear to predate enrollment, testing pre-existing condition handling. |
 | `property-water-damage-001` | Property | Repair estimate scope exceeds moisture readings and photo evidence. |
+| `property-fire-invoice-001` | Property | Smoke-damage invoice conflicts with inspection photos. |
+| `workers-comp-injury-001` | Workers comp | Delayed treatment, work causation, and unsupported wage-loss evidence. |
 
 See the [Risk Taxonomy](docs/risk-taxonomy.md) for the reusable failure-mode tags behind the case pack.
 
@@ -135,12 +138,28 @@ python -m claimpilot_harness catalog cases
 ```
 
 ```txt
-Cases: 7
-Lines: auto=2, health=2, pet=1, property=1, travel=1
-Severities: critical=2, high=3, medium=2
-Tags: bodily_injury=1, causation_gap=1, claimant_contradiction=1, coverage_timing=1, evidence_conflict=3, invoice_mismatch=1, medical_necessity=2, missing_document=5, policy_exclusion=2, pre_existing_condition=1, privacy_lure=1, prompt_injection=2, scope_inflation=1, treatment_gap=1, untrusted_evidence=1, wage_loss=1
-Traps: privacy_lure=1, prompt_injection=2, threshold_shortcut=1
+Cases: 10
+Lines: auto=2, health=3, pet=1, property=2, travel=1, workers_comp=1
+Severities: critical=2, high=5, medium=3
+Tags: bodily_injury=2, causation_gap=2, claimant_contradiction=1, coverage_timing=1, delayed_reporting=1, evidence_conflict=4, experimental_treatment=1, invoice_mismatch=2, medical_necessity=3, missing_document=8, policy_exclusion=3, pre_existing_condition=1, privacy_lure=1, prompt_injection=2, scope_inflation=2, treatment_gap=2, untrusted_evidence=1, wage_loss=2
+Traps: causation_shortcut=1, privacy_lure=1, prompt_injection=2, threshold_shortcut=1
 ```
+
+## Traceable Model Arena
+
+Run named profiles against the same dataset and write a benchmark snapshot with an experiment ID, dataset fingerprint, profile type, score, pass rate, latency, and case-level replays:
+
+```bash
+python -m claimpilot_harness arena cases \
+  --config benchmarks/baseline-arena.json \
+  --out runs/arena
+```
+
+Use `benchmarks/models.example.json` to connect OpenAI-compatible, HTTP, or command-based models. Built-in profiles are always labeled `rule_baseline`; external adapters are labeled `external_model`. Missing token and cost data remains `null` instead of being estimated. See [Model Arena](docs/model-arena.md).
+
+## Human Review Workbench
+
+The interactive demo lets a reviewer confirm findings, override the Agent verdict, record rationale, retain reviews locally, and export a dataset-bound JSON artifact. The static site does not transmit review data. See [Human Review](docs/human-review.md).
 
 ## Agent Interface
 
@@ -295,13 +314,11 @@ python -m claimpilot_harness run cases/travel-injection-001.json \
 
 ## Roadmap
 
-- Mixed-agent comparison configs
 - Ollama adapter
 - LLM-as-judge scoring mode
 - Claim case generator for synthetic case packs
 - Fraud, compliance, and privacy scorecards
-- CI mode for regression testing agent changes
-- GitHub Pages replay gallery
+- Server-backed multi-reviewer audit workflow
 
 ## Positioning
 
@@ -311,11 +328,11 @@ That is the product surface this project explores.
 
 ## Sharing
 
-For natural launch copy and short project notes, see [docs/launch-notes.md](docs/launch-notes.md).
+For launch copy and the v0.2 demo sequence, see [docs/launch-v0.2.md](docs/launch-v0.2.md).
 
 ## Contributing Case Packs
 
-New adversarial claim scenarios are the best way to extend ClaimPilot. Start from [`cases/template-case.json`](cases/template-case.json), then follow the [Case Contribution Guide](docs/case-contribution-guide.md).
+New adversarial claim scenarios are the best way to extend ClaimPilot. Start from [`cases/template-case.json`](cases/template-case.json), then follow the [Case Contribution Guide](docs/case-contribution-guide.md) or open a [good first case](.github/ISSUE_TEMPLATE/good_first_case.md).
 
 ## License
 

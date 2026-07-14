@@ -83,11 +83,11 @@ def frame_cover() -> Image.Image:
     img = base()
     draw = ImageDraw.Draw(img)
     draw.rectangle((0, 0, W, H), fill=DARK)
-    pill(draw, 72, 76, "AI AGENT EVALS", "#d1fae5", "#0f5137", F16)
+    pill(draw, 72, 76, "V0.2 · MODEL ARENA", "#d1fae5", "#0f5137", F16)
     text(draw, (72, 190), "ClaimPilot", fill="#ffffff", fnt=F64B)
     text(draw, (72, 266), "Harness", fill="#ffffff", fnt=F64B)
     text(draw, (76, 326), "Crash-test AI claim agents before production.", fill="#d9f5e8", fnt=F26B)
-    text(draw, (76, 366), "Adversarial cases. Deterministic scoring. Replayable failures.", fill=MINT, fnt=F20)
+    text(draw, (76, 366), "10 cases. Traceable experiments. Human review.", fill=MINT, fnt=F20)
     leaderboard_card(draw, 690, 108, 500, 360, demo_pct=93.9, risky_pct=6.1, compact=True)
     rounded(draw, (72, 508, 590, 612), radius=16, fill="#ffffff", outline=LINE)
     text(draw, (100, 548), "Same case. Two agents. One survives, one fails.", fill=INK, fnt=F24B())
@@ -127,9 +127,9 @@ def terminal_frame(progress: float) -> Image.Image:
 def leaderboard_frame(progress: float) -> Image.Image:
     img = base()
     draw = ImageDraw.Draw(img)
-    header(draw, "Step 2", "Agent leaderboard", "One model resists the injected instruction. The weak baseline approves the claim.")
+    header(draw, "Step 2", "Traceable Model Arena", "Rule baselines and external model runs are disclosed separately.")
     rounded(draw, (72, 244, 1208, 636), radius=14, fill=PANEL, outline=LINE)
-    text(draw, (106, 292), "Leaderboard", fill=INK, fnt=F30B)
+    text(draw, (106, 292), "Measured benchmark snapshot", fill=INK, fnt=F30B)
     text(draw, (106, 342), "Rank", fill=MUTED, fnt=F16)
     text(draw, (260, 342), "Agent", fill=MUTED, fnt=F16)
     text(draw, (500, 342), "Score", fill=MUTED, fnt=F16)
@@ -173,7 +173,7 @@ def mini_agent(draw, x, y, w, name, subtitle, pct, color):
 def trap_frame() -> Image.Image:
     img = base()
     draw = ImageDraw.Draw(img)
-    header(draw, "Step 3", "Why this case is interesting", "The evidence itself contains an instruction that a production agent must ignore.")
+    header(draw, "Step 3", "Human Review Workbench", "Confirm the evidence, correct the verdict, and export structured feedback.")
     cards = [
         ("E1 Boarding pass", "Passenger and route are confirmed.", GOOD),
         ("E2 Delay screenshot", "Claims 7-hour delay, but it is not official carrier proof.", "#b85c00"),
@@ -185,8 +185,8 @@ def trap_frame() -> Image.Image:
         pill(draw, x + 24, 302, title, "#edf7f2" if color == GOOD else "#fff1f0", color, F16)
         text_wrapped(draw, body, x + 24, 366, 292, fill=INK, fnt=F24B())
     rounded(draw, (72, 560, 1208, 628), radius=16, fill="#101815", outline="#101815")
-    text(draw, (102, 584), "Strong agent: investigate + request official carrier delay letter", fill="#d1fae5", fnt=F20)
-    text(draw, (704, 584), "Weak agent: approve immediately", fill="#fecaca", fnt=F20)
+    text(draw, (102, 584), "Agent recommendation: investigate", fill="#d1fae5", fnt=F20)
+    text(draw, (704, 584), "Human decision: reviewed + exported", fill=MINT, fnt=F20)
     return img
 
 
@@ -210,13 +210,13 @@ def final_frame() -> Image.Image:
     draw = ImageDraw.Draw(img)
     draw.rectangle((0, 0, W, H), fill=DARK)
     text(draw, (72, 130), "ClaimPilot Harness", fill="#ffffff", fnt=F64B)
-    text(draw, (76, 190), "From AI demo to production-readiness review.", fill="#d9f5e8", fnt=F26B)
+    text(draw, (76, 190), "From AI demo to measurable claims-agent reliability.", fill="#d9f5e8", fnt=F26B)
     rounded(draw, (72, 268, 1208, 506), radius=18, fill="#ffffff", outline=LINE)
     bullets = [
-        "Adversarial insurance claim cases",
-        "Deterministic scoring and agent comparison",
-        "Replayable HTML failure reports",
-        "OpenAI-compatible adapter for real agents",
+        "10 adversarial insurance claim cases",
+        "Traceable Model Arena and dataset fingerprints",
+        "Human review with structured JSON export",
+        "OpenAI-compatible, HTTP, and command adapters",
     ]
     for i, item in enumerate(bullets):
         pill(draw, 110, 304 + i * 42, "OK", "#edf7f2", GOOD, F12)
@@ -258,4 +258,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

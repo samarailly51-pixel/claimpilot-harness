@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: ClaimPilot case contribution guide
+    url: https://github.com/samarailly51-pixel/claimpilot-harness/blob/main/docs/case-contribution-guide.md
+    about: Read the case format, safety rules, and local validation workflow.

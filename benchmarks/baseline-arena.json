@@ -1,0 +1,16 @@
+{
+  "profiles": [
+    {
+      "id": "cautious-baseline",
+      "display_name": "Cautious Rule Baseline",
+      "provider": "ClaimPilot",
+      "adapter": "demo"
+    },
+    {
+      "id": "risky-baseline",
+      "display_name": "Risky Rule Baseline",
+      "provider": "ClaimPilot",
+      "adapter": "risky"
+    }
+  ]
+}

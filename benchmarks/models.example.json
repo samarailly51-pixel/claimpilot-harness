@@ -1,0 +1,29 @@
+{
+  "profiles": [
+    {
+      "id": "cautious-baseline",
+      "display_name": "Cautious Rule Baseline",
+      "provider": "ClaimPilot",
+      "adapter": "demo"
+    },
+    {
+      "id": "openai-compatible-model",
+      "display_name": "My Hosted Model",
+      "provider": "OpenAI-compatible",
+      "adapter": "openai",
+      "model": "your-model-name",
+      "base_url": "https://api.openai.com/v1",
+      "api_key_env": "OPENAI_API_KEY",
+      "enabled": false
+    },
+    {
+      "id": "internal-claims-agent",
+      "display_name": "Internal Claims Agent",
+      "provider": "Custom HTTP",
+      "adapter": "http",
+      "url": "http://127.0.0.1:8000/review",
+      "timeout": 90,
+      "enabled": false
+    }
+  ]
+}

@@ -1,8 +1,12 @@
 const state = {
   cases: [],
   results: [],
+  arena: null,
+  stats: null,
+  reviews: {},
   caseId: "travel-injection-001",
   agent: "demo",
+  reviewVerdict: "investigate",
   running: false,
 };
 
@@ -30,27 +34,47 @@ const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const $ = (selector) => document.querySelector(selector);
 
 async function bootstrap() {
-  const [caseResponse, resultResponse] = await Promise.all([
+  const [caseResponse, resultResponse, arenaResponse, statsResponse] = await Promise.all([
     fetch("case-data.json", { cache: "no-store" }),
     fetch("suite-results.json", { cache: "no-store" }),
+    fetch("arena-results.json", { cache: "no-store" }),
+    fetch("project-stats.json", { cache: "no-store" }),
   ]);
   state.cases = await caseResponse.json();
   state.results = (await resultResponse.json()).results;
+  state.arena = await arenaResponse.json();
+  state.stats = await statsResponse.json();
+  state.reviews = loadReviews();
   renderProjectMetrics();
+  renderArena();
   renderCaseOptions();
   bindEvents();
   renderAll();
 }
 
 function renderProjectMetrics() {
-  const tags = new Set(state.cases.flatMap((item) => item.tags));
-  const demoResults = state.results.filter((item) => item.agent === "demo");
-  const average = demoResults.length
-    ? demoResults.reduce((total, item) => total + Number(item.score), 0) / demoResults.length
-    : 0;
-  $("#caseCount").textContent = state.cases.length;
-  $("#riskCount").textContent = tags.size;
-  $("#baselineScore").textContent = average.toFixed(1);
+  $("#caseCount").textContent = state.stats.case_count;
+  $("#riskCount").textContent = state.stats.risk_count;
+  $("#baselineScore").textContent = Number(state.stats.safe_baseline_score).toFixed(1);
+  $("#testCount").textContent = state.stats.test_count;
+}
+
+function renderArena() {
+  $("#experimentId").textContent = state.arena.experiment_id;
+  $("#datasetHash").textContent = state.arena.dataset_sha256.slice(0, 16);
+  $("#datasetHash").title = state.arena.dataset_sha256;
+  $("#arenaRows").innerHTML = state.arena.profiles.map((profile) => {
+    const external = profile.run_type === "external_model";
+    const average = profile.average_score === null ? "--" : `${Number(profile.average_score).toFixed(1)}%`;
+    const passRate = profile.pass_rate === null ? "--" : `${Number(profile.pass_rate).toFixed(1)}%`;
+    const latency = profile.median_latency_ms === null ? "--" : `${Number(profile.median_latency_ms).toFixed(1)} ms`;
+    return `<tr>
+      <td class="profile-name"><strong>${escapeHtml(profile.display_name)}</strong><small>${escapeHtml(profile.provider)}${profile.model ? ` · ${escapeHtml(profile.model)}` : ""}</small></td>
+      <td><span class="run-type ${external ? "external" : ""}">${external ? "external model" : "rule baseline"}</span></td>
+      <td><strong>${average}</strong></td><td>${passRate}</td><td>${latency}</td>
+      <td><span class="badge ${profile.status === "measured" ? "" : "risk"}">${escapeHtml(profile.status)}</span></td>
+    </tr>`;
+  }).join("");
 }
 
 function renderCaseOptions() {
@@ -75,6 +99,15 @@ function bindEvents() {
     });
   });
   $("#runButton").addEventListener("click", runEvaluation);
+  document.querySelectorAll("[data-review-verdict]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.reviewVerdict = button.dataset.reviewVerdict;
+      renderReviewVerdict();
+    });
+  });
+  $("#saveReview").addEventListener("click", saveReview);
+  $("#exportReviews").addEventListener("click", exportReviews);
+  $("#clearReview").addEventListener("click", clearReview);
   window.addEventListener("keydown", (event) => {
     if ((event.ctrlKey || event.metaKey) && event.key === "Enter") runEvaluation();
   });
@@ -90,6 +123,84 @@ function renderAll() {
   renderRail(item);
   renderCase(item);
   renderInspector(item, result);
+  renderReview(item, result);
+}
+
+function reviewKey() { return `${state.caseId}:${state.agent}`; }
+
+function renderReview(item, result) {
+  const saved = state.reviews[reviewKey()];
+  state.reviewVerdict = saved?.human_verdict || result.verdict;
+  $("#reviewCaseTitle").textContent = item.title;
+  $("#reviewCaseMeta").textContent = `${item.id} · ${lineLabel(item.line)} · ${item.severity}`;
+  $("#reviewAgentVerdict").textContent = `${result.verdict} · ${Number(result.score).toFixed(1)}/100`;
+  $("#reviewFindings").innerHTML = item.expected.must_find.map((finding, index) => {
+    const checked = saved?.confirmed_findings?.includes(finding) ? "checked" : "";
+    return `<label class="review-check"><input type="checkbox" value="${escapeHtml(finding)}" ${checked}><span>${escapeHtml(finding)}</span></label>`;
+  }).join("");
+  $("#reviewNote").value = saved?.rationale || "";
+  $("#reviewStatus").textContent = saved ? "Reviewed" : "Not reviewed";
+  $("#reviewHistoryCount").textContent = `${Object.keys(state.reviews).length} saved review${Object.keys(state.reviews).length === 1 ? "" : "s"}`;
+  renderReviewVerdict();
+}
+
+function renderReviewVerdict() {
+  document.querySelectorAll("[data-review-verdict]").forEach((button) => {
+    const active = button.dataset.reviewVerdict === state.reviewVerdict;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", active ? "true" : "false");
+  });
+}
+
+function saveReview() {
+  const item = currentCase();
+  const result = currentResult();
+  const confirmed = [...document.querySelectorAll("#reviewFindings input:checked")].map((input) => input.value);
+  state.reviews[reviewKey()] = {
+    schema_version: "1.0",
+    case_id: item.id,
+    agent: state.agent,
+    agent_verdict: result.verdict,
+    agent_score: result.score,
+    human_verdict: state.reviewVerdict,
+    confirmed_findings: confirmed,
+    rationale: $("#reviewNote").value.trim(),
+    reviewed_at: new Date().toISOString(),
+    dataset_sha256: state.arena.dataset_sha256,
+  };
+  persistReviews();
+  renderReview(item, result);
+}
+
+function clearReview() {
+  delete state.reviews[reviewKey()];
+  persistReviews();
+  renderReview(currentCase(), currentResult());
+}
+
+function exportReviews() {
+  const payload = {
+    schema_version: "1.0",
+    exported_at: new Date().toISOString(),
+    dataset_sha256: state.arena.dataset_sha256,
+    reviews: Object.values(state.reviews),
+  };
+  const blob = new Blob([`${JSON.stringify(payload, null, 2)}\n`], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "claimpilot-human-reviews.json";
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function loadReviews() {
+  try { return JSON.parse(localStorage.getItem("claimpilot-reviews-v1") || "{}"); }
+  catch { return {}; }
+}
+
+function persistReviews() {
+  localStorage.setItem("claimpilot-reviews-v1", JSON.stringify(state.reviews));
 }
 
 function renderRail(item) {
@@ -189,7 +300,7 @@ function resetPipeline() {
 }
 
 function lineLabel(value) {
-  return ({ auto: "Auto", health: "Health", pet: "Pet", property: "Property", travel: "Travel" })[value] || value;
+  return ({ auto: "Auto", health: "Health", pet: "Pet", property: "Property", travel: "Travel", workers_comp: "Workers Comp" })[value] || value;
 }
 function typeLabel(value) { return value.split("_").map((x) => x[0].toUpperCase() + x.slice(1)).join(" "); }
 function formatAmount(value) { return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value); }

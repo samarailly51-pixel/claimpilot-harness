@@ -2,11 +2,13 @@ const state = {
   cases: [],
   results: [],
   arena: null,
+  trace: null,
   stats: null,
   reviews: {},
   caseId: "travel-injection-001",
   agent: "demo",
   reviewVerdict: "investigate",
+  traceAgent: "cautious",
   running: false,
 };
 
@@ -34,19 +36,22 @@ const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const $ = (selector) => document.querySelector(selector);
 
 async function bootstrap() {
-  const [caseResponse, resultResponse, arenaResponse, statsResponse] = await Promise.all([
+  const [caseResponse, resultResponse, arenaResponse, statsResponse, traceResponse] = await Promise.all([
     fetch("case-data.json", { cache: "no-store" }),
     fetch("suite-results.json", { cache: "no-store" }),
     fetch("arena-results.json", { cache: "no-store" }),
     fetch("project-stats.json", { cache: "no-store" }),
+    fetch("trace-results.json", { cache: "no-store" }),
   ]);
   state.cases = await caseResponse.json();
   state.results = (await resultResponse.json()).results;
   state.arena = await arenaResponse.json();
   state.stats = await statsResponse.json();
+  state.trace = await traceResponse.json();
   state.reviews = loadReviews();
   renderProjectMetrics();
   renderArena();
+  renderTrace();
   renderCaseOptions();
   bindEvents();
   renderAll();
@@ -108,6 +113,13 @@ function bindEvents() {
   $("#saveReview").addEventListener("click", saveReview);
   $("#exportReviews").addEventListener("click", exportReviews);
   $("#clearReview").addEventListener("click", clearReview);
+  document.querySelectorAll("[data-trace-agent]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.traceAgent = button.dataset.traceAgent;
+      renderTrace();
+    });
+  });
+  $("#playTrace").addEventListener("click", playTrace);
   window.addEventListener("keydown", (event) => {
     if ((event.ctrlKey || event.metaKey) && event.key === "Enter") runEvaluation();
   });
@@ -115,6 +127,67 @@ function bindEvents() {
 
 function currentCase() { return state.cases.find((item) => item.id === state.caseId); }
 function currentResult() { return state.results.find((item) => item.case_id === state.caseId && item.agent === state.agent); }
+
+function currentTrace() { return state.trace.results.find((item) => item.agent === state.traceAgent); }
+
+function renderTrace() {
+  const result = currentTrace();
+  if (!result) return;
+  document.querySelectorAll("[data-trace-agent]").forEach((button) => {
+    const active = button.dataset.traceAgent === state.traceAgent;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", active ? "true" : "false");
+  });
+  $("#traceTitle").textContent = state.traceAgent === "cautious" ? "Cautious Trace" : "Shortcut Trace";
+  $("#traceStatus").textContent = result.score.safety_violations.length ? "safety violation" : "approval-safe";
+  $("#traceStatus").classList.toggle("risk", result.score.safety_violations.length > 0);
+  $("#traceScore").textContent = Number(result.score.percent).toFixed(1);
+  $("#traceGrade").textContent = `${result.decision} · ${result.score.grade}`;
+  $("#traceGrade").classList.toggle("fail", result.score.grade !== "pass");
+  $("#traceTimeline").innerHTML = result.events.map((event) => {
+    const summary = traceEventSummary(event);
+    return `<div class="trace-event ${event.status === "blocked" ? "blocked" : ""}">
+      <span class="trace-index">${String(event.index).padStart(2, "0")}</span>
+      <div><strong>${escapeHtml(event.name)}</strong><small>${escapeHtml(summary)}</small></div>
+      <span class="trace-kind">${escapeHtml(event.event_type.replace("_", " "))}</span>
+    </div>`;
+  }).join("");
+  $("#traceMetrics").innerHTML = [
+    ["Tool calls", result.score.tool_calls],
+    ["Required checks", `${result.score.checks.filter((item) => item.passed).length}/${result.score.checks.length}`],
+    ["Final decision", result.decision],
+  ].map(([label, value]) => `<div class="metric"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
+  const violations = result.score.safety_violations.length
+    ? result.score.safety_violations
+    : ["No dangerous action bypass detected"];
+  $("#traceViolations").innerHTML = violations.map((item) =>
+    `<div class="finding ${result.score.safety_violations.length ? "danger" : ""}">${escapeHtml(item)}</div>`
+  ).join("");
+}
+
+function traceEventSummary(event) {
+  if (event.event_type === "tool_call") {
+    const args = event.payload.arguments || {};
+    return Object.entries(args).map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(", ") : value}`).join(" · ");
+  }
+  if (event.event_type === "tool_result") {
+    if (event.payload.blocked) return `Blocked: ${event.payload.reason}`;
+    if (event.payload.returned_ids) return `Returned evidence ${event.payload.returned_ids.join(", ")}`;
+    if (event.payload.request_status) return `${event.payload.document} · ${event.payload.request_status}`;
+    if (event.payload.queue) return `Routed to ${event.payload.queue}`;
+    return "Tool result recorded";
+  }
+  return `${event.payload.summary} · confidence ${event.payload.confidence}`;
+}
+
+async function playTrace() {
+  const rows = [...document.querySelectorAll(".trace-event")];
+  rows.forEach((row) => row.classList.add("hidden"));
+  for (const row of rows) {
+    row.classList.remove("hidden");
+    await wait(180);
+  }
+}
 
 function renderAll() {
   const item = currentCase();

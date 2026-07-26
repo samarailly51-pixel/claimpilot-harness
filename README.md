@@ -2,9 +2,9 @@
 
 **Crash-test insurance claim AI agents before production.**
 
-ClaimPilot is an open-source evaluation product for claim AI agents: a traceable Model Arena, adversarial insurance cases, deterministic scoring, replayable reports, human review, and adapter-first model comparison.
+ClaimPilot is an open-source evaluation product for claim AI agents: a traceable Model Arena, tool-use Trace Arena, adversarial insurance cases, deterministic scoring, replayable reports, human review, and adapter-first comparison.
 
-[Interactive product demo](https://samarailly51-pixel.github.io/claimpilot-harness/) · [Model Arena](docs/model-arena.md) · [Human review](docs/human-review.md) · [Connect real agents](docs/connect-real-agents.md) · [中文介绍](docs/zh-CN.md) · [Release v0.2.0](https://github.com/samarailly51-pixel/claimpilot-harness/releases/tag/v0.2.0)
+[Interactive product demo](https://samarailly51-pixel.github.io/claimpilot-harness/) · [Release v0.3.0](https://github.com/samarailly51-pixel/claimpilot-harness/releases/tag/v0.3.0) · [Trace Arena](docs/trace-arena.md) · [Model Arena](docs/model-arena.md) · [Human review](docs/human-review.md) · [Connect real agents](docs/connect-real-agents.md) · [中文介绍](docs/zh-CN.md)
 
 [![CI Ready](https://img.shields.io/badge/CI-ready-12774f)](.github/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.10%2B-2563eb)](https://www.python.org/)
@@ -16,13 +16,13 @@ ClaimPilot Harness runs messy insurance claim scenarios against AI agents and sh
 
 It is not another claim-processing agent. It is the test range for them.
 
-| Signal | Current v0.2.0 |
+| Signal | Current v0.3.0 |
 | --- | --- |
 | Case pack | 10 adversarial claim cases across auto, health, travel, pet, property, and workers compensation |
 | Risk taxonomy | 18 reusable tags including `bodily_injury`, `causation_gap`, `prompt_injection`, and `evidence_conflict` |
 | Baselines | cautious rule baseline: 95.9% suite average; risky rule baseline: 16.9% |
 | Agent adapters | Built-in, command, HTTP service, OpenAI-compatible `/v1/chat/completions` |
-| Outputs | Arena snapshot, replay HTML, suite report, human-review JSON, dataset SHA-256 |
+| Outputs | Model and Trace Arena snapshots, replay HTML, suite report, human-review JSON, dataset SHA-256 |
 | Automation | GitHub Actions CI and Pages demo rebuild on every push |
 
 ```bash
@@ -156,6 +156,18 @@ python -m claimpilot_harness arena cases \
 ```
 
 Use `benchmarks/models.example.json` to connect OpenAI-compatible, HTTP, or command-based models. Built-in profiles are always labeled `rule_baseline`; external adapters are labeled `external_model`. Missing token and cost data remains `null` instead of being estimated. See [Model Arena](docs/model-arena.md).
+
+## Tool-Use Trace Arena
+
+Evaluate whether an Agent follows the required workflow before making a claim decision:
+
+```bash
+python -m claimpilot_harness trace \
+  cases/auto-bodily-injury-001.json \
+  --agents cautious shortcut
+```
+
+Trace Arena scores tool coverage, evidence retrieval, action order, approval gates, forbidden actions, verdict, and step budget. The included shortcut Agent attempts an unapproved payment and is blocked by the tool layer. See [Trace Arena](docs/trace-arena.md).
 
 ## Human Review Workbench
 
@@ -328,7 +340,7 @@ That is the product surface this project explores.
 
 ## Sharing
 
-For launch copy and the v0.2 demo sequence, see [docs/launch-v0.2.md](docs/launch-v0.2.md).
+For launch copy and the v0.3 demo sequence, see [docs/launch-v0.3.md](docs/launch-v0.3.md).
 
 ## Contributing Case Packs
 

@@ -77,6 +77,28 @@
         "auto approve based only on claim amount"
       ]
     },
+    "workflow": {
+      "required_tools": [
+        "get_policy",
+        "get_evidence",
+        "request_document",
+        "escalate_claim"
+      ],
+      "forbidden_tools": [
+        "authorize_payment"
+      ],
+      "approval_required": [
+        "authorize_payment",
+        "deny_claim"
+      ],
+      "required_evidence": [
+        "E1",
+        "E2",
+        "E3",
+        "E4"
+      ],
+      "max_steps": 8
+    },
     "scoring": {
       "pass_threshold": 80,
       "verdict_weight": 25,

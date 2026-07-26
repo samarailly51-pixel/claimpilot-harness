@@ -6,6 +6,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from .cases import CASE_ID_PATTERN
+
 
 REQUIRED_TOP_LEVEL = {
     "id": str,
@@ -53,7 +55,8 @@ def validate_path(path: str | Path) -> list[ValidationResult]:
         files = sorted(item for item in target.glob("*.json") if item.name != CASE_TEMPLATE_NAME)
         if not files:
             return [ValidationResult(str(target), False, ["directory contains no .json case files"])]
-        return [validate_case_file(item) for item in files]
+        results = [validate_case_file(item) for item in files]
+        return add_duplicate_id_errors(files, results)
     return [validate_case_file(target)]
 
 
@@ -76,6 +79,9 @@ def validate_case_file(path: str | Path) -> ValidationResult:
     if errors:
         return ValidationResult(str(case_path), False, errors)
 
+    if not CASE_ID_PATTERN.fullmatch(raw["id"]):
+        errors.append("case.id must use lowercase letters, numbers, hyphen, or underscore")
+
     if raw["expected"]["verdict"] not in ALLOWED_VERDICTS:
         errors.append(f"expected.verdict must be one of {sorted(ALLOWED_VERDICTS)}")
 
@@ -84,6 +90,7 @@ def validate_case_file(path: str | Path) -> ValidationResult:
     validate_scoring(raw, errors)
     validate_traps(raw, errors)
     validate_tags(raw, errors)
+    validate_workflow(raw, errors)
 
     return ValidationResult(str(case_path), not errors, errors)
 
@@ -125,19 +132,54 @@ def validate_evidence(raw: dict[str, Any], errors: list[str]) -> None:
 
 def validate_expected(raw: dict[str, Any], errors: list[str]) -> None:
     expected = raw["expected"]
+    error_count = len(errors)
     validate_required_object(expected, REQUIRED_EXPECTED, "expected", errors)
-    if errors:
+    if len(errors) > error_count:
         return
-
-    evidence_ids = {item["id"] for item in raw["evidence"] if isinstance(item, dict) and "id" in item}
-    for citation in expected["must_cite"]:
-        if citation not in evidence_ids:
-            errors.append(f"expected.must_cite references unknown evidence id '{citation}'")
 
     for key in ["must_find", "must_request", "must_cite", "must_not"]:
         for index, item in enumerate(expected[key]):
             if not isinstance(item, str):
                 errors.append(f"expected.{key}[{index}] must be string")
+
+    evidence_ids = {
+        item["id"]
+        for item in raw["evidence"]
+        if isinstance(item, dict) and isinstance(item.get("id"), str)
+    }
+    for citation in expected["must_cite"]:
+        if isinstance(citation, str) and citation not in evidence_ids:
+            errors.append(f"expected.must_cite references unknown evidence id '{citation}'")
+
+
+def add_duplicate_id_errors(
+    files: list[Path],
+    results: list[ValidationResult],
+) -> list[ValidationResult]:
+    indexes_by_id: dict[str, list[int]] = {}
+    for index, case_path in enumerate(files):
+        try:
+            raw = json.loads(case_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        case_id = raw.get("id") if isinstance(raw, dict) else None
+        if isinstance(case_id, str):
+            indexes_by_id.setdefault(case_id, []).append(index)
+
+    updated = list(results)
+    for case_id, indexes in indexes_by_id.items():
+        if len(indexes) < 2:
+            continue
+        names = ", ".join(files[index].name for index in indexes)
+        message = f"case.id '{case_id}' is duplicated across: {names}"
+        for index in indexes:
+            current = updated[index]
+            updated[index] = ValidationResult(
+                path=current.path,
+                ok=False,
+                errors=[*current.errors, message],
+            )
+    return updated
 
 
 def validate_scoring(raw: dict[str, Any], errors: list[str]) -> None:
@@ -180,6 +222,22 @@ def validate_tags(raw: dict[str, Any], errors: list[str]) -> None:
         if tag in seen_tags:
             errors.append(f"{label} duplicates '{tag}'")
         seen_tags.add(tag)
+
+
+def validate_workflow(raw: dict[str, Any], errors: list[str]) -> None:
+    workflow = raw.get("workflow")
+    if workflow is None:
+        return
+    if not isinstance(workflow, dict):
+        errors.append("case.workflow must be object")
+        return
+    for key in ["required_tools", "forbidden_tools", "approval_required", "required_evidence"]:
+        value = workflow.get(key, [])
+        if not isinstance(value, list) or any(not isinstance(item, str) for item in value):
+            errors.append(f"workflow.{key} must be list of strings")
+    max_steps = workflow.get("max_steps")
+    if max_steps is not None and (not isinstance(max_steps, int) or max_steps <= 0):
+        errors.append("workflow.max_steps must be a positive integer")
 
 
 def type_label(expected_type: type | tuple[type, ...]) -> str:

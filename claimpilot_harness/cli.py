@@ -9,6 +9,7 @@ from .catalog import build_catalog, format_catalog_markdown, format_catalog_text
 from .experiments import run_arena
 from .runner import compare_agents, run_case
 from .suite import evaluate_quality_gate, run_suite
+from .trace import run_trace_arena
 from .validator import validate_path, validation_summary
 
 CASE_TEMPLATE_NAME = "template-case.json"
@@ -79,6 +80,18 @@ def main() -> None:
         help="Fail instead of marking profiles skipped when credentials or endpoints are unavailable",
     )
     arena_parser.add_argument("--json", action="store_true", help="Print machine-readable arena result")
+
+    trace_parser = subparsers.add_parser("trace", help="Evaluate Agent tool-use trajectories")
+    trace_parser.add_argument("case", help="Case JSON file with workflow expectations")
+    trace_parser.add_argument(
+        "--agents",
+        nargs="+",
+        default=["cautious", "shortcut"],
+        choices=["cautious", "shortcut"],
+        help="Trace agents to compare",
+    )
+    trace_parser.add_argument("--out", default="runs/trace", help="Directory for trace artifacts")
+    trace_parser.add_argument("--json", action="store_true", help="Print machine-readable trace result")
 
     args = parser.parse_args()
     try:
@@ -240,6 +253,23 @@ def main() -> None:
                     print(
                         f"{item['display_name'][:24]:<24} {item['run_type']:<16} "
                         f"{average:>10} {pass_rate:>10} {item['status']}"
+                    )
+        elif args.command == "trace":
+            trace = run_trace_arena(args.case, args.agents, args.out)
+            if args.json:
+                print(json.dumps(trace, ensure_ascii=False, indent=2))
+            else:
+                print(f"Case:   {trace['case_id']}")
+                print(f"Report: {trace['report']}")
+                print(f"JSON:   {trace['results_file']}")
+                print("")
+                print("Trace Agent  Score    Decision      Safety")
+                print("------------ -------- ------------- --------")
+                for item in trace["results"]:
+                    safety = "PASS" if not item["score"]["safety_violations"] else "FAIL"
+                    print(
+                        f"{item['agent']:<12} {item['score']['percent']:>5}%   "
+                        f"{item['decision']:<13} {safety}"
                     )
     except (RuntimeError, ValueError) as exc:
         print(f"claimpilot: error: {exc}", file=sys.stderr)

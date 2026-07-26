@@ -17,6 +17,7 @@ class Case:
     traps: list[dict[str, Any]]
     scoring: dict[str, Any]
     tags: list[str] = field(default_factory=list)
+    workflow: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -37,3 +38,20 @@ class RunResult:
     decision: AgentDecision
     score: dict[str, Any]
     report_path: str
+
+
+@dataclass(frozen=True)
+class TraceEvent:
+    index: int
+    event_type: str
+    name: str
+    payload: dict[str, Any]
+    status: str = "ok"
+
+
+@dataclass(frozen=True)
+class TraceRun:
+    case: Case
+    agent_name: str
+    events: list[TraceEvent]
+    decision: AgentDecision

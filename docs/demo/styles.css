@@ -250,6 +250,30 @@ select {
 .arena-command { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-top: 14px; padding: 13px 15px; color: #d8eee4; background: #101c16; border-radius: 6px; }
 .arena-command code { overflow-wrap: anywhere; font-size: 12px; }
 .arena-command a { flex: 0 0 auto; color: var(--mint); font-size: 12px; font-weight: 800; }
+.trace-workbench { display: grid; grid-template-columns: 220px minmax(0, 1fr) 230px; min-height: 560px; border: 1px solid var(--line); background: white; }
+.trace-controls, .trace-score { padding: 18px; background: #fbfdfb; }
+.trace-controls { display: flex; flex-direction: column; gap: 8px; border-right: 1px solid var(--line); }
+.trace-controls .run-button { margin-top: auto; }
+.trace-agent { display: block; width: 100%; padding: 11px; text-align: left; border: 1px solid var(--line); border-radius: 6px; color: var(--ink); background: white; cursor: pointer; }
+.trace-agent.active { border-color: var(--blue); background: var(--blue-soft); }
+.trace-agent strong, .trace-agent small { display: block; }
+.trace-agent strong { font-size: 12px; }
+.trace-agent small { margin-top: 3px; color: var(--muted); font-size: 10px; }
+.trace-stage { min-width: 0; padding: 20px; }
+.trace-head { display: flex; justify-content: space-between; gap: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.trace-head h3 { margin: 4px 0 0; font-size: 20px; }
+.trace-timeline { margin-top: 8px; }
+.trace-event { position: relative; display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--line); opacity: 1; transition: opacity .2s, transform .2s; }
+.trace-event.hidden { opacity: .15; transform: translateY(4px); }
+.trace-index { color: var(--blue); font: 800 11px/1.5 ui-monospace, Consolas, monospace; }
+.trace-event strong { display: block; font-size: 12px; }
+.trace-event small { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; line-height: 1.4; overflow-wrap: anywhere; }
+.trace-kind { align-self: start; padding: 3px 6px; color: #315347; background: #e9f1ed; border-radius: 4px; font-size: 9px; font-weight: 800; text-transform: uppercase; }
+.trace-event.blocked strong, .trace-event.blocked .trace-kind { color: var(--red); }
+.trace-event.blocked .trace-kind { background: var(--red-soft); }
+.trace-score { border-left: 1px solid var(--line); }
+.trace-score > strong { display: block; margin: 6px 0 10px; font-size: 48px; line-height: 1; }
+.trace-score .secondary-button { width: 100%; margin-top: 16px; }
 .review-workbench { display: grid; grid-template-columns: 240px minmax(0, 1fr) 210px; border: 1px solid var(--line); background: white; }
 .review-context, .review-form, .review-actions { min-width: 0; padding: 20px; }
 .review-context { border-right: 1px solid var(--line); background: #fbfdfb; }
@@ -291,6 +315,8 @@ footer a { color: white; font-weight: 800; }
   .inspector { grid-column: 1 / -1; border-top: 1px solid var(--line); border-left: 0; }
   .inspector { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
   .review-workbench { grid-template-columns: 220px minmax(0, 1fr); }
+  .trace-workbench { grid-template-columns: 200px minmax(0, 1fr); }
+  .trace-score { grid-column: 1 / -1; border-top: 1px solid var(--line); border-left: 0; }
   .review-actions { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto auto auto; align-items: end; border-top: 1px solid var(--line); border-left: 0; }
 }
 @media (max-width: 760px) {
@@ -307,11 +333,14 @@ footer a { color: white; font-weight: 800; }
   .section-head, .portfolio-note { display: block; }
   .section-head p { margin-top: 14px; }
   .proof-grid, .architecture { grid-template-columns: 1fr; }
-  .arena-meta, .review-workbench { grid-template-columns: 1fr; }
+  .arena-meta, .review-workbench, .trace-workbench { grid-template-columns: 1fr; }
   .arena-meta strong, .arena-meta code { white-space: normal; overflow-wrap: anywhere; }
   .review-context { border-right: 0; border-bottom: 1px solid var(--line); }
   .review-actions { display: grid; grid-template-columns: 1fr; border-left: 0; }
   .review-findings { grid-template-columns: 1fr; }
+  .trace-controls { border-right: 0; border-bottom: 1px solid var(--line); }
+  .trace-controls .run-button { margin-top: 8px; }
+  .trace-score { border-left: 0; }
   .proof:first-child { grid-row: auto; }
   .arch-step:not(:last-child)::after { content: "↓"; right: 50%; top: auto; bottom: -11px; }
 }

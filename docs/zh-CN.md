@@ -35,6 +35,7 @@ ClaimPilot Harness 把这些风险变成可重复运行的测试案例，让团�
 - **车险人伤理赔 Skill**：把事故因果关系、治疗时间线、医疗材料、误工损失核验和人工升级规则沉淀为可复用的 [Bodily Injury Claims Processing Skill](../skills/bodily-injury-claims-processing/SKILL.md)。
 - **可追踪 Model Arena**：为每次实验记录模型配置、数据集指纹、运行时间、延迟、得分和逐案 replay，并明确区分规则基线与外部模型。
 - **Human Review Workbench**：人工确认风险点、修正结论、记录复核理由，并导出绑定数据集指纹的 JSON 反馈。
+- **Trace Arena**：评测 Agent 是否按顺序查保单、取证、补件和升级人工，并验证赔付、拒赔等危险动作是否经过审批。
 
 完整架构说明见 [Architecture](architecture.md)，真实 Agent 接入示例见 [Connect Real Agents](connect-real-agents.md)。
 
@@ -110,7 +111,7 @@ risky            16.9%       0.0%
 
 - GitHub：https://github.com/samarailly51-pixel/claimpilot-harness
 - 在线 Demo：https://samarailly51-pixel.github.io/claimpilot-harness/
-- Release：https://github.com/samarailly51-pixel/claimpilot-harness/releases/tag/v0.2.0
+- Release：https://github.com/samarailly51-pixel/claimpilot-harness/releases/tag/v0.3.0
 
 ## 适合谁看
 

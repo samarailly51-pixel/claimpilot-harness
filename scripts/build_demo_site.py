@@ -12,11 +12,13 @@ sys.path.insert(0, str(ROOT))
 
 from claimpilot_harness.suite import run_suite
 from claimpilot_harness.experiments import run_arena
+from claimpilot_harness.trace import run_trace_arena
 
 DEMO_DIR = ROOT / "docs" / "demo"
 CASES_DIR = ROOT / "cases"
 DEMO_GIF = ROOT / "assets" / "claimpilot-demo.gif"
 ARENA_CONFIG = ROOT / "benchmarks" / "baseline-arena.json"
+TRACE_CASE = CASES_DIR / "auto-bodily-injury-001.json"
 
 
 def main() -> None:
@@ -32,6 +34,11 @@ def main() -> None:
     arena = run_arena(
         cases_path=CASES_DIR,
         config_path=ARENA_CONFIG,
+        output_dir=DEMO_DIR,
+    )
+    trace = run_trace_arena(
+        case_path=TRACE_CASE,
+        agents=["cautious", "shortcut"],
         output_dir=DEMO_DIR,
     )
 
@@ -53,6 +60,7 @@ def main() -> None:
         "safe_baseline_score": demo_summary["average_score"],
         "arena_experiment_id": arena["experiment_id"],
         "dataset_sha256": arena["dataset_sha256"],
+        "trace_case_id": trace["case_id"],
     }
     (DEMO_DIR / "project-stats.json").write_text(
         json.dumps(stats, indent=2) + "\n",
@@ -63,6 +71,7 @@ def main() -> None:
     print(f"Suite report: {suite['report']}")
     print(f"Suite results: {suite['results_file']}")
     print(f"Arena results: {arena['results_file']}")
+    print(f"Trace results: {trace['results_file']}")
     for agent in suite["agents"]:
         print(
             f"{agent['agent']}: average={agent['average_score']}%, "

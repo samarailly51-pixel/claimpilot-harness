@@ -42,6 +42,9 @@ jobs:
       - name: Run traceable arena smoke test
         run: python -m claimpilot_harness arena cases --config benchmarks/baseline-arena.json --out runs/arena --json
 
+      - name: Run tool-use trace smoke test
+        run: python -m claimpilot_harness trace cases/auto-bodily-injury-001.json --out runs/trace --json
+
       - name: Build demo site
         run: python scripts/build_demo_site.py
 

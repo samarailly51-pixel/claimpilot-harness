@@ -17,6 +17,7 @@
     <nav class="nav" aria-label="Primary navigation">
       <a href="#lab">Live Lab</a>
       <a href="#arena">Model Arena</a>
+      <a href="#trace">Trace Arena</a>
       <a href="#review">Human Review</a>
       <a href="#case-study">Case Study</a>
       <a href="#architecture">Architecture</a>
@@ -136,6 +137,39 @@
       </div>
     </section>
 
+    <section class="band" id="trace">
+      <div class="inner">
+        <div class="section-head">
+          <h2>Trace Arena: evaluate the path, not only the answer.</h2>
+          <p>同一宗车险人伤案件，逐步比较 Agent 是否先查保单、读取证据、请求补件、升级人工，以及危险赔付动作是否经过审批。</p>
+        </div>
+        <div class="trace-workbench">
+          <aside class="trace-controls">
+            <span class="label">Trajectory profile</span>
+            <button class="trace-agent active" type="button" data-trace-agent="cautious" aria-pressed="true">
+              <strong>Cautious Trace</strong><small>Evidence-first workflow</small>
+            </button>
+            <button class="trace-agent" type="button" data-trace-agent="shortcut" aria-pressed="false">
+              <strong>Shortcut Trace</strong><small>Approval bypass attempt</small>
+            </button>
+            <button class="run-button" id="playTrace" type="button">Replay trajectory</button>
+          </aside>
+          <div class="trace-stage">
+            <div class="trace-head"><div><span class="case-id">AUTO-BODILY-INJURY-001</span><h3 id="traceTitle">Cautious Trace</h3></div><span class="badge" id="traceStatus"></span></div>
+            <div class="trace-timeline" id="traceTimeline"></div>
+          </div>
+          <aside class="trace-score">
+            <span class="label">Trajectory score</span>
+            <strong id="traceScore">--</strong>
+            <span class="verdict" id="traceGrade"></span>
+            <div class="metric-list" id="traceMetrics"></div>
+            <div class="finding-list" id="traceViolations"></div>
+            <a class="secondary-button" href="trace-report.html">Open full trace report</a>
+          </aside>
+        </div>
+      </div>
+    </section>
+
     <section class="band" id="review">
       <div class="inner">
         <div class="section-head">
@@ -210,7 +244,7 @@
     <section class="band white">
       <div class="inner portfolio-note">
         <div><p class="kicker" style="color:var(--blue)">Built as an AI product case study</p><h2>ClaimPilot is the test range, not another claims chatbot.</h2></div>
-        <div><p>我把这个项目作为一个真实产品问题来设计：如何帮助团队判断 Agent 是否具备上线条件，并让产品、业务、风控和工程看到同一份证据。</p><p>v0.2 已加入可追踪 Model Arena、人工复核闭环、10 个对抗案例与车险人伤 Domain Skill Pack；外部模型结果必须来自真实运行，缺失数据保持为空。</p><div class="link-row"><a class="run-button" style="width:auto" href="https://github.com/samarailly51-pixel/claimpilot-harness">Explore the source ↗</a><a class="secondary-button" href="https://github.com/samarailly51-pixel/claimpilot-harness/blob/main/docs/evaluation-methodology.md">Read methodology</a></div></div>
+        <div><p>我把这个项目作为一个真实产品问题来设计：如何帮助团队判断 Agent 是否具备上线条件，并让产品、业务、风控和工程看到同一份证据。</p><p>v0.3 已加入工具调用 Trace Arena、审批门禁、可追踪 Model Arena、人工复核闭环、10 个对抗案例与车险人伤 Domain Skill Pack；外部模型结果必须来自真实运行，缺失数据保持为空。</p><div class="link-row"><a class="run-button" style="width:auto" href="https://github.com/samarailly51-pixel/claimpilot-harness">Explore the source ↗</a><a class="secondary-button" href="https://github.com/samarailly51-pixel/claimpilot-harness/blob/main/docs/evaluation-methodology.md">Read methodology</a></div></div>
       </div>
     </section>
   </main>

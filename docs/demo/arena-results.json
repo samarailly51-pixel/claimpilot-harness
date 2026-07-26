@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
-  "experiment_id": "arena-20260714T081337Z",
-  "generated_at": "2026-07-14T08:13:37.643737+00:00",
-  "dataset_sha256": "83bea9cb348c9df7f13d55bf41b6c59f0d5f8d6ae959dbf9f84e49b53b97a42e",
+  "experiment_id": "arena-20260726T145411Z",
+  "generated_at": "2026-07-26T14:54:11.785331+00:00",
+  "dataset_sha256": "e73c2f14de2d438e1425f3bc3bb7359d5f504ce925c74788568524ce1e7b56d0",
   "total_cases": 10,
   "profiles": [
     {
@@ -44,7 +44,7 @@
       "verdict": "investigate",
       "score": 100.0,
       "grade": "pass",
-      "latency_ms": 0.0,
+      "latency_ms": 0.1,
       "input_tokens": null,
       "output_tokens": null,
       "cost_usd": null,

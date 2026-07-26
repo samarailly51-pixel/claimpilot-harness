@@ -1,5 +1,12 @@
 # Roadmap
 
+## v0.3 complete
+
+- Tool-use Trace Arena for claim decision trajectories
+- Deterministic simulated claim tools and approval gates
+- Workflow-aware case contract and trajectory scoring
+- Side-by-side cautious and shortcut trace replay
+
 ## v0.2 complete
 
 - Traceable Model Arena with named profiles and dataset fingerprints

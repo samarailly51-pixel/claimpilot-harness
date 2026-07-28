@@ -302,6 +302,10 @@ textarea:focus { outline: 2px solid var(--blue-soft); border-color: var(--blue);
 .arch-step:not(:last-child)::after { content: "→"; position: absolute; right: -11px; top: 50%; z-index: 2; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; color: var(--blue); background: var(--blue-soft); font-weight: 900; }
 .arch-step strong { display: block; margin: 42px 0 8px; }
 .arch-step p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+.video-shell { max-width: 1180px; border: 1px solid var(--line); background: var(--forest); }
+.video-shell video { display: block; width: 100%; aspect-ratio: 16 / 9; background: var(--forest); }
+.video-meta { display: flex; justify-content: space-between; gap: 16px; max-width: 1180px; margin-top: 12px; color: var(--muted); font-size: 12px; }
+.video-meta a { color: var(--blue); font-weight: 800; }
 .portfolio-note { display: grid; grid-template-columns: 1fr 1fr; gap: 42px; }
 .portfolio-note h2 { margin: 0; font-size: clamp(28px, 4vw, 48px); }
 .portfolio-note p { margin: 0 0 14px; color: var(--muted); line-height: 1.7; }
@@ -343,6 +347,7 @@ footer a { color: white; font-weight: 800; }
   .trace-score { border-left: 0; }
   .proof:first-child { grid-row: auto; }
   .arch-step:not(:last-child)::after { content: "↓"; right: 50%; top: auto; bottom: -11px; }
+  .video-meta { flex-direction: column; }
 }
 @media (max-width: 460px) {
   h1 { font-size: 36px; }

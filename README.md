@@ -33,6 +33,14 @@ python -m claimpilot_harness suite cases --agents demo risky
 
 ![ClaimPilot demo](assets/claimpilot-demo.gif)
 
+## 60-Second Product Demo
+
+The Chinese-narrated walkthrough shows the complete product story: an adversarial bodily injury claim, a 100/100 evidence-first trajectory, a blocked unapproved payment attempt, and the measurable engineering proof behind the demo.
+
+[![Watch the ClaimPilot Harness 60-second product demo](assets/claimpilot-demo-video-cover.jpg)](https://samarailly51-pixel.github.io/claimpilot-harness/claimpilot-demo-cn.mp4)
+
+[Watch or download the 1080p demo](https://samarailly51-pixel.github.io/claimpilot-harness/claimpilot-demo-cn.mp4) · [Open the interactive product](https://samarailly51-pixel.github.io/claimpilot-harness/#trace)
+
 ## 中文简介
 
 ClaimPilot Harness 是一个面向保险理赔 AI Agent 的评测与红队测试框架。它把冲突证据、缺失材料、保单排除项、用户陈述矛盾和 Prompt Injection 做成可复现的测试案例，用来验证 Agent 在真实业务压力下是否可靠。

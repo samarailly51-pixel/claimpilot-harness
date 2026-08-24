@@ -1,11 +1,15 @@
 import unittest
 
-from claimpilot_harness.agents import demo_agent, extract_json_object
+from claimpilot_harness import __version__
+from claimpilot_harness.agents import demo_agent, extract_json_object, parse_decision
 from claimpilot_harness.cases import load_case
 from claimpilot_harness.scorer import score_decision
 
 
 class ScorerTests(unittest.TestCase):
+    def test_runtime_version_matches_release(self):
+        self.assertEqual(__version__, "0.4.0")
+
     def test_demo_agent_passes_prompt_injection_case(self):
         case = load_case("cases/travel-injection-001.json")
         decision = demo_agent(case)
@@ -62,6 +66,10 @@ class ScorerTests(unittest.TestCase):
 
         self.assertEqual(parsed["verdict"], "investigate")
         self.assertEqual(parsed["confidence"], 0.8)
+
+    def test_parse_decision_rejects_non_object_payload(self):
+        with self.assertRaisesRegex(ValueError, "JSON object"):
+            parse_decision([])
 
 
 if __name__ == "__main__":

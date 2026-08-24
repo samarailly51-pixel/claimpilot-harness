@@ -7,6 +7,45 @@ from tempfile import TemporaryDirectory
 
 
 class CliTests(unittest.TestCase):
+    def test_init_and_test_commands_run_generated_project(self):
+        with TemporaryDirectory() as tmpdir:
+            target = Path(tmpdir) / "quickstart"
+            initialized = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "claimpilot_harness",
+                    "init",
+                    str(target),
+                    "--name",
+                    "CLI Quickstart",
+                    "--json",
+                ],
+                text=True,
+                capture_output=True,
+                check=True,
+            )
+            init_payload = json.loads(initialized.stdout)
+            self.assertEqual(init_payload["project"], "CLI Quickstart")
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "claimpilot_harness",
+                    "test",
+                    "--config",
+                    str(target / "claimpilot.json"),
+                    "--json",
+                ],
+                text=True,
+                capture_output=True,
+                check=True,
+            )
+            payload = json.loads(completed.stdout)
+            self.assertTrue(payload["quality_gate"]["ok"])
+            self.assertTrue(Path(payload["artifacts"]["scorecard"]).exists())
+
     def test_run_outputs_json_and_replay(self):
         with TemporaryDirectory() as tmpdir:
             completed = subprocess.run(
@@ -226,6 +265,74 @@ class CliTests(unittest.TestCase):
         payload = json.loads(completed.stdout)
         self.assertFalse(payload["ok"])
         self.assertIn("tags[0]", payload["results"][0]["errors"][0])
+
+    def test_validate_rejects_non_string_citation_without_crashing(self):
+        with TemporaryDirectory() as tmpdir:
+            case_path = Path(tmpdir) / "bad-citation.json"
+            raw = json.loads(Path("cases/travel-injection-001.json").read_text(encoding="utf-8"))
+            raw["expected"]["must_cite"] = [{"bad": "shape"}]
+            case_path.write_text(json.dumps(raw), encoding="utf-8")
+
+            completed = subprocess.run(
+                [sys.executable, "-m", "claimpilot_harness", "validate", str(case_path), "--json"],
+                text=True,
+                capture_output=True,
+            )
+
+        self.assertEqual(completed.returncode, 1)
+        payload = json.loads(completed.stdout)
+        self.assertFalse(payload["ok"])
+        self.assertIn("expected.must_cite[0] must be string", payload["results"][0]["errors"])
+
+    def test_validate_rejects_duplicate_case_ids(self):
+        with TemporaryDirectory() as tmpdir:
+            case_dir = Path(tmpdir) / "cases"
+            case_dir.mkdir()
+            raw = json.loads(Path("cases/travel-injection-001.json").read_text(encoding="utf-8"))
+            raw["id"] = "duplicate-case"
+            (case_dir / "first.json").write_text(json.dumps(raw), encoding="utf-8")
+            raw["title"] = "Second case with the same ID"
+            (case_dir / "second.json").write_text(json.dumps(raw), encoding="utf-8")
+
+            completed = subprocess.run(
+                [sys.executable, "-m", "claimpilot_harness", "validate", str(case_dir), "--json"],
+                text=True,
+                capture_output=True,
+            )
+
+        self.assertEqual(completed.returncode, 1)
+        payload = json.loads(completed.stdout)
+        self.assertEqual(payload["failed"], 2)
+        for result in payload["results"]:
+            self.assertTrue(any("duplicated across" in error for error in result["errors"]))
+
+    def test_run_rejects_unsafe_case_id_before_writing_replay(self):
+        with TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            case_path = root / "unsafe-id.json"
+            escaped_stem = root / "escaped"
+            raw = json.loads(Path("cases/travel-injection-001.json").read_text(encoding="utf-8"))
+            raw["id"] = str(escaped_stem)
+            case_path.write_text(json.dumps(raw), encoding="utf-8")
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "claimpilot_harness",
+                    "run",
+                    str(case_path),
+                    "--out",
+                    str(root / "out"),
+                    "--json",
+                ],
+                text=True,
+                capture_output=True,
+            )
+
+            self.assertEqual(completed.returncode, 2)
+            self.assertIn("case.id", completed.stderr)
+            self.assertFalse(Path(f"{escaped_stem}-demo-replay.html").exists())
 
     def test_suite_outputs_agent_summary_and_report(self):
         with TemporaryDirectory() as tmpdir:

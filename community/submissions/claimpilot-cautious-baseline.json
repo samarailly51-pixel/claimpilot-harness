@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "project": "ClaimPilot Harness",
+  "experiment_id": "arena-20260726T145411Z",
+  "generated_at": "2026-07-26T14:54:11.785331+00:00",
+  "dataset_sha256": "e73c2f14de2d438e1425f3bc3bb7359d5f504ce925c74788568524ce1e7b56d0",
+  "total_cases": 10,
+  "profile": {
+    "id": "cautious-baseline",
+    "display_name": "Cautious Rule Baseline",
+    "provider": "ClaimPilot",
+    "model": null,
+    "adapter": "demo",
+    "run_type": "rule_baseline",
+    "average_score": 95.9,
+    "pass_rate": 100.0,
+    "median_latency_ms": 0.0
+  },
+  "quality_gate": {
+    "ok": true,
+    "min_average_score": 90,
+    "min_pass_rate": 100,
+    "failures": []
+  },
+  "disclosure": "Deterministic rule baseline included as a reference control. This is not an external model result."
+}

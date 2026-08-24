@@ -45,6 +45,14 @@ jobs:
       - name: Run tool-use trace smoke test
         run: python -m claimpilot_harness trace cases/auto-bodily-injury-001.json --out runs/trace --json
 
+      - name: Validate community benchmark submissions
+        run: python -m claimpilot_harness community --check
+
+      - name: Check generated community leaderboard
+        run: |
+          python -m claimpilot_harness community
+          git diff --exit-code -- community/LEADERBOARD.md
+
       - name: Build demo site
         run: python scripts/build_demo_site.py
 
@@ -53,3 +61,35 @@ jobs:
 
       - name: Run demo smoke test
         run: python -m claimpilot_harness run cases/travel-injection-001.json --json
+
+  package:
+    name: Build and install package
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install build tools
+        run: python -m pip install --upgrade build twine
+
+      - name: Build distributions
+        run: python -m build
+
+      - name: Check package metadata
+        run: python -m twine check dist/*
+
+      - name: Install wheel
+        run: python -m pip install dist/*.whl
+
+      - name: Verify packaged quickstart
+        run: |
+          cd "$(mktemp -d)"
+          claimpilot init quickstart
+          cd quickstart
+          claimpilot test

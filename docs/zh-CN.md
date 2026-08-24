@@ -23,6 +23,8 @@ ClaimPilot Harness 把这些风险变成可重复运行的测试案例，让团�
 
 ## 核心能力
 
+- **三分钟接入**：通过 `claimpilot init` 生成配置、示例 Agent、对抗案例和 GitHub Actions，再用 `claimpilot test` 完成统一评测。
+- **质量门禁与成绩卡**：自动生成 HTML 报告、SVG 成绩卡、分享文案和社区 Benchmark 提交 JSON，并在低于阈值时让 CI 失败。
 - **Adversarial Claim Cases**：内置车险、健康险、旅行险、宠物险、财产险等理赔测试案例，覆盖冲突证据、缺失材料、排除项、隐私诱导和注入攻击。
 - **Deterministic Scoring**：从结论、风险识别、补充材料请求、证据引用、隐私与注入防护等维度对 Agent 打分。
 - **Agent Comparison**：支持 `demo`、`risky`、OpenAI-compatible adapter 等不同 Agent 横向对比。
@@ -111,7 +113,8 @@ risky            16.9%       0.0%
 
 - GitHub：https://github.com/samarailly51-pixel/claimpilot-harness
 - 在线 Demo：https://samarailly51-pixel.github.io/claimpilot-harness/
-- Release：https://github.com/samarailly51-pixel/claimpilot-harness/releases/tag/v0.3.0
+- Release：https://github.com/samarailly51-pixel/claimpilot-harness/releases/latest
+- Community Benchmark：https://github.com/samarailly51-pixel/claimpilot-harness/blob/main/community/LEADERBOARD.md
 
 ## 适合谁看
 

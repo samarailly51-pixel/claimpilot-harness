@@ -4,6 +4,9 @@ import hashlib
 import json
 import os
 import re
+import shlex
+import subprocess
+import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -29,7 +32,10 @@ def run_arena(
     if not case_paths:
         raise ValueError("arena requires at least one case JSON file")
 
+    config_path = Path(config_path).resolve()
     profiles = load_profiles(config_path)
+    for profile in profiles:
+        profile["_config_dir"] = str(config_path.parent)
     out_dir = Path(output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     results: list[dict[str, Any]] = []
@@ -44,30 +50,41 @@ def run_arena(
             continue
 
         profile_results = []
+        profile_error: RuntimeError | ValueError | None = None
         for case_path in case_paths:
             case = load_case(case_path)
             started = time.perf_counter()
-            decision = run_profile(case, profile)
+            try:
+                decision = run_profile(case, profile)
+            except (RuntimeError, ValueError) as exc:
+                profile_error = exc
+                break
             latency_ms = round((time.perf_counter() - started) * 1000, 1)
             score = score_decision(case, decision)
             replay = render_replay(case, profile["id"], decision, score, out_dir, update_latest=False)
-            row = {
-                "case_id": case.id,
-                "case_title": case.title,
-                "line": case.line,
-                "severity": case.severity,
-                "profile_id": profile["id"],
-                "verdict": decision.verdict,
-                "score": score["percent"],
-                "grade": score["grade"],
-                "latency_ms": latency_ms,
-                "input_tokens": None,
-                "output_tokens": None,
-                "cost_usd": None,
-                "replay": replay.resolve().relative_to(out_dir.resolve()).as_posix(),
-            }
-            results.append(row)
-            profile_results.append(row)
+            profile_results.append(
+                {
+                    "case_id": case.id,
+                    "case_title": case.title,
+                    "line": case.line,
+                    "severity": case.severity,
+                    "profile_id": profile["id"],
+                    "verdict": decision.verdict,
+                    "score": score["percent"],
+                    "grade": score["grade"],
+                    "latency_ms": latency_ms,
+                    "input_tokens": None,
+                    "output_tokens": None,
+                    "cost_usd": None,
+                    "replay": replay.resolve().relative_to(out_dir.resolve()).as_posix(),
+                }
+            )
+        if profile_error is not None:
+            if not skip_unavailable:
+                raise profile_error
+            profile_summaries.append(profile_summary(profile, [], "skipped", str(profile_error)))
+            continue
+        results.extend(profile_results)
         profile_summaries.append(profile_summary(profile, profile_results, "measured", None))
 
     payload = {
@@ -131,16 +148,29 @@ def profile_availability(profile: dict[str, Any]) -> dict[str, Any]:
 
 
 def run_profile(case: Any, profile: dict[str, Any]) -> Any:
+    command = profile.get("command")
+    config_dir = profile.get("_config_dir")
+    if command:
+        command = command.replace("{python}", shell_argument(sys.executable))
+        if config_dir:
+            command = command.replace("{project_dir}", shell_argument(config_dir))
     return run_agent(
         case,
         agent=profile["adapter"],
-        command=profile.get("command"),
+        command=command,
         http_url=profile.get("url"),
         http_timeout=int(profile.get("timeout", 90)),
         openai_model=profile.get("model"),
         openai_base_url=profile.get("base_url", "https://api.openai.com/v1"),
         openai_api_key_env=profile.get("api_key_env", "OPENAI_API_KEY"),
+        command_cwd=profile.get("_config_dir"),
     )
+
+
+def shell_argument(value: str) -> str:
+    if os.name == "nt":
+        return subprocess.list2cmdline([value])
+    return shlex.quote(value)
 
 
 def profile_summary(

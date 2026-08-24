@@ -1,5 +1,7 @@
 # Contributing
 
+To submit a measured Agent result instead of a case pack, follow the [ClaimPilot Agent Reliability Challenge](community/CHALLENGE.md). `claimpilot test` generates the required `claimpilot-submission.json`, and CI validates every leaderboard contribution.
+
 ClaimPilot Harness is case-pack-first. The easiest way to contribute is to add realistic adversarial claim scenarios.
 
 ## Good First Contributions

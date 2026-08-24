@@ -1,5 +1,14 @@
 # Roadmap
 
+## v0.4 complete
+
+- `claimpilot init` project scaffolding for command, HTTP, and OpenAI-compatible Agents
+- `claimpilot test` as a single config-driven benchmark and quality-gate command
+- Standalone HTML Agent report, SVG scorecard, share-ready Markdown, and submission JSON
+- Cross-platform command profiles resolved from the project configuration directory
+- Community Agent Reliability Challenge with validated, generated leaderboard
+- PyPI-ready package metadata, clean-wheel verification, and Trusted Publishing workflow
+
 ## v0.3 complete
 
 - Tool-use Trace Arena for claim decision trajectories
@@ -15,7 +24,7 @@
 - Ten adversarial cases including bodily injury and workers compensation
 - Community case contribution workflow and good-first-case template
 
-## v0.1
+## v0.1 complete
 
 - Offline CLI runner
 - Built-in demo agent
@@ -33,22 +42,10 @@
 - Machine-readable suite benchmark JSON
 - Architecture, evaluation methodology, and real-agent connection docs
 
-## v0.2
-
-- Ollama adapter
-- Mixed-agent comparison configs
-- Case contribution templates
-
-## v0.3
-
-- LLM-as-judge scoring mode
-- GitHub Actions regression examples
-- Prompt-injection benchmark pack
-- Privacy and compliance scorecards
-
 ## v1.0
 
 - Stable case schema
 - Stable adapter interface
 - Public replay gallery
 - Organization-specific rubric packs
+- Signed benchmark provenance and versioned public datasets

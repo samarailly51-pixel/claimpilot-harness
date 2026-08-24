@@ -22,6 +22,7 @@ def run_agent(
     openai_model: str | None = None,
     openai_base_url: str = "https://api.openai.com/v1",
     openai_api_key_env: str = "OPENAI_API_KEY",
+    command_cwd: str | Path | None = None,
 ) -> AgentDecision:
     if agent == "demo":
         return demo_agent(case)
@@ -41,7 +42,7 @@ def run_agent(
     if agent == "command":
         if not command:
             raise ValueError("--agent-command is required when --agent command is used")
-        return command_agent(case, command)
+        return command_agent(case, command, cwd=command_cwd)
     raise ValueError(f"Unknown agent '{agent}'. Supported agents: demo, risky, command, openai, http")
 
 
@@ -172,20 +173,23 @@ def risky_agent(case: Case) -> AgentDecision:
     )
 
 
-def command_agent(case: Case, command: str) -> AgentDecision:
+def command_agent(case: Case, command: str, cwd: str | Path | None = None) -> AgentDecision:
     payload = {
         "case": case.__dict__,
         "prompt": case_to_prompt(case),
     }
-    completed = subprocess.run(
-        command,
-        input=json.dumps(payload, ensure_ascii=False),
-        text=True,
-        capture_output=True,
-        shell=True,
-        cwd=Path.cwd(),
-        timeout=90,
-    )
+    try:
+        completed = subprocess.run(
+            command,
+            input=json.dumps(payload, ensure_ascii=False),
+            text=True,
+            capture_output=True,
+            shell=True,
+            cwd=Path(cwd).resolve() if cwd is not None else Path.cwd(),
+            timeout=90,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise RuntimeError("Agent command timed out after 90 seconds") from exc
     if completed.returncode != 0:
         sys.stderr.write(completed.stderr)
         raise RuntimeError(f"Agent command failed with exit code {completed.returncode}")
@@ -277,6 +281,14 @@ def openai_compatible_agent(
 
 
 def parse_decision(raw: dict[str, Any]) -> AgentDecision:
+    if not isinstance(raw, dict):
+        raise ValueError("Agent decision must be a JSON object")
+
+    list_fields = ["findings", "requested_documents", "cited_evidence", "privacy_flags"]
+    for field in list_fields:
+        if not isinstance(raw.get(field, []), list):
+            raise ValueError(f"Agent decision field '{field}' must be a list")
+
     return AgentDecision(
         verdict=str(raw.get("verdict", "investigate")).lower(),
         confidence=float(raw.get("confidence", 0.0)),

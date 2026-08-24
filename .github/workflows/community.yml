@@ -1,0 +1,33 @@
+name: Community Benchmark
+
+on:
+  pull_request:
+    paths:
+      - "community/submissions/**"
+      - "community/LEADERBOARD.md"
+      - "claimpilot_harness/community.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Validate submissions
+        run: python -m claimpilot_harness community --check
+
+      - name: Rebuild leaderboard
+        run: python -m claimpilot_harness community
+
+      - name: Require a current generated leaderboard
+        run: git diff --exit-code -- community/LEADERBOARD.md

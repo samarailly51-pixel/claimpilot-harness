@@ -2,9 +2,9 @@
 
 **Crash-test insurance claim AI agents before production.**
 
-ClaimPilot is an open-source evaluation product for claim AI agents: a traceable Model Arena, tool-use Trace Arena, adversarial insurance cases, deterministic scoring, replayable reports, human review, and adapter-first comparison.
+ClaimPilot is an open-source evaluation product for claim AI agents: initialize an Agent test project, run adversarial insurance cases, enforce deterministic quality gates, and publish replayable reports and benchmark scorecards.
 
-[Interactive product demo](https://samarailly51-pixel.github.io/claimpilot-harness/) · [Release v0.3.0](https://github.com/samarailly51-pixel/claimpilot-harness/releases/tag/v0.3.0) · [Trace Arena](docs/trace-arena.md) · [Model Arena](docs/model-arena.md) · [Human review](docs/human-review.md) · [Connect real agents](docs/connect-real-agents.md) · [中文介绍](docs/zh-CN.md)
+[Interactive product demo](https://samarailly51-pixel.github.io/claimpilot-harness/) · [Latest release](https://github.com/samarailly51-pixel/claimpilot-harness/releases/latest) · [3-minute quickstart](docs/quickstart.md) · [Community Challenge](community/CHALLENGE.md) · [Trace Arena](docs/trace-arena.md) · [中文介绍](docs/zh-CN.md)
 
 [![CI Ready](https://img.shields.io/badge/CI-ready-12774f)](.github/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.10%2B-2563eb)](https://www.python.org/)
@@ -16,18 +16,23 @@ ClaimPilot Harness runs messy insurance claim scenarios against AI agents and sh
 
 It is not another claim-processing agent. It is the test range for them.
 
-| Signal | Current v0.3.0 |
+| Signal | Current v0.4.0 |
 | --- | --- |
 | Case pack | 10 adversarial claim cases across auto, health, travel, pet, property, and workers compensation |
 | Risk taxonomy | 18 reusable tags including `bodily_injury`, `causation_gap`, `prompt_injection`, and `evidence_conflict` |
 | Baselines | cautious rule baseline: 95.9% suite average; risky rule baseline: 16.9% |
 | Agent adapters | Built-in, command, HTTP service, OpenAI-compatible `/v1/chat/completions` |
-| Outputs | Model and Trace Arena snapshots, replay HTML, suite report, human-review JSON, dataset SHA-256 |
-| Automation | GitHub Actions CI and Pages demo rebuild on every push |
+| Outputs | Replay HTML, Agent report, SVG scorecard, share-ready Markdown, submission JSON, dataset SHA-256 |
+| Automation | Configurable quality gates, generated GitHub Actions, package build checks, Pages demo |
 
 ```bash
-python -m claimpilot_harness suite cases --agents demo risky
+pip install claimpilot-harness
+claimpilot init my-agent-eval
+cd my-agent-eval
+claimpilot test
 ```
+
+The quickstart generates `claimpilot.json`, a working command Agent, an adversarial starter case, and a GitHub Actions workflow. Replace the starter logic with your Agent or switch the profile to HTTP or an OpenAI-compatible endpoint.
 
 ![ClaimPilot Harness cover](assets/claimpilot-cover.svg)
 
@@ -45,7 +50,7 @@ The Chinese-narrated walkthrough shows the complete product story: an adversaria
 
 ClaimPilot Harness 是一个面向保险理赔 AI Agent 的评测与红队测试框架。它把冲突证据、缺失材料、保单排除项、用户陈述矛盾和 Prompt Injection 做成可复现的测试案例，用来验证 Agent 在真实业务压力下是否可靠。
 
-项目内置车险、健康险、旅行险、宠物险和财产险等示例案例，支持 deterministic scoring、case coverage catalog、Agent 横向对比、HTML replay、leaderboard，以及 OpenAI-compatible `/v1/chat/completions` 和 HTTP Agent 接口接入。
+现在可以通过 `claimpilot init` 初始化评测项目，再用 `claimpilot test` 一次生成质量门禁结果、HTML 报告、SVG 成绩卡、分享文案和社区 Benchmark 提交文件。项目支持 command、HTTP 以及 OpenAI-compatible `/v1/chat/completions` 三种真实 Agent 接入方式。
 
 它不是又一个理赔 Agent，而是理赔 Agent 上线前的“碰撞测试场”。完整中文介绍见 [docs/zh-CN.md](docs/zh-CN.md)。
 
@@ -334,11 +339,12 @@ python -m claimpilot_harness run cases/travel-injection-001.json \
 
 ## Roadmap
 
-- Ollama adapter
-- LLM-as-judge scoring mode
-- Claim case generator for synthetic case packs
-- Fraud, compliance, and privacy scorecards
-- Server-backed multi-reviewer audit workflow
+- Stable case and adapter schemas
+- Signed benchmark provenance and versioned public datasets
+- Organization-specific rubric packs
+- Public replay gallery
+
+Completed milestones are tracked in [ROADMAP.md](ROADMAP.md).
 
 ## Positioning
 
@@ -348,11 +354,11 @@ That is the product surface this project explores.
 
 ## Sharing
 
-For launch copy and the v0.3 demo sequence, see [docs/launch-v0.3.md](docs/launch-v0.3.md).
+Every `claimpilot test` run generates a portable SVG scorecard, copy-ready Markdown, and `claimpilot-submission.json`. See the [Community Benchmark](community/LEADERBOARD.md), enter the [Agent Reliability Challenge](community/CHALLENGE.md), or read the [v0.4 launch notes](docs/launch-v0.4.md).
 
 ## Contributing Case Packs
 
-New adversarial claim scenarios are the best way to extend ClaimPilot. Start from [`cases/template-case.json`](cases/template-case.json), then follow the [Case Contribution Guide](docs/case-contribution-guide.md) or open a [good first case](.github/ISSUE_TEMPLATE/good_first_case.md).
+New adversarial claim scenarios are the best way to extend ClaimPilot. Start from [`cases/template-case.json`](cases/template-case.json), then follow the [Case Contribution Guide](docs/case-contribution-guide.md) or open a [good first case](.github/ISSUE_TEMPLATE/good_first_case.md). Agent benchmark submissions use the separate [Challenge workflow](community/CHALLENGE.md).
 
 ## License
 

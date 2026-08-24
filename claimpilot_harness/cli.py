@@ -6,7 +6,9 @@ import sys
 from pathlib import Path
 
 from .catalog import build_catalog, format_catalog_markdown, format_catalog_text
+from .community import build_community_leaderboard, validate_submissions
 from .experiments import run_arena
+from .project import init_project, render_scorecard_from_results, run_project
 from .runner import compare_agents, run_case
 from .suite import evaluate_quality_gate, run_suite
 from .trace import run_trace_arena
@@ -21,6 +23,40 @@ def main() -> None:
         description="Crash-test insurance claim AI agents.",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
+
+    init_parser = subparsers.add_parser("init", help="Create a ready-to-run ClaimPilot Agent project")
+    init_parser.add_argument("directory", nargs="?", default=".", help="Directory to initialize")
+    init_parser.add_argument("--name", help="Project name written to claimpilot.json")
+    init_parser.add_argument(
+        "--adapter",
+        choices=["command", "http", "openai"],
+        default="command",
+        help="Starter Agent adapter",
+    )
+    init_parser.add_argument("--force", action="store_true", help="Replace generated files that already exist")
+    init_parser.add_argument("--json", action="store_true", help="Print machine-readable initialization result")
+
+    test_parser = subparsers.add_parser("test", help="Run the configured Agent benchmark and quality gate")
+    test_parser.add_argument("--config", default="claimpilot.json", help="Path to project configuration")
+    test_parser.add_argument("--out", help="Override the configured artifact directory")
+    test_parser.add_argument(
+        "--allow-skipped",
+        action="store_true",
+        help="Allow unavailable profiles to be skipped instead of failing the run",
+    )
+    test_parser.add_argument("--json", action="store_true", help="Print machine-readable benchmark result")
+
+    scorecard_parser = subparsers.add_parser("scorecard", help="Regenerate shareable artifacts from test results")
+    scorecard_parser.add_argument("results", help="Path to claimpilot-results.json")
+    scorecard_parser.add_argument("--out", help="Directory for generated artifacts")
+    scorecard_parser.add_argument("--profile", help="Measured profile to feature")
+    scorecard_parser.add_argument("--json", action="store_true", help="Print machine-readable artifact paths")
+
+    community_parser = subparsers.add_parser("community", help="Validate submissions and build a community leaderboard")
+    community_parser.add_argument("path", nargs="?", default="community/submissions", help="Submission JSON file or directory")
+    community_parser.add_argument("--out", default="community/LEADERBOARD.md", help="Generated leaderboard path")
+    community_parser.add_argument("--check", action="store_true", help="Validate submissions without writing a leaderboard")
+    community_parser.add_argument("--json", action="store_true", help="Print machine-readable result")
 
     run_parser = subparsers.add_parser("run", help="Run one claim case against an agent")
     run_parser.add_argument("case", help="Path to a ClaimPilot case JSON file")
@@ -95,7 +131,71 @@ def main() -> None:
 
     args = parser.parse_args()
     try:
-        if args.command == "run":
+        if args.command == "init":
+            initialized = init_project(args.directory, args.name, args.adapter, args.force)
+            if args.json:
+                print(json.dumps(initialized, ensure_ascii=False, indent=2))
+            else:
+                print(f"Initialized {initialized['project']} in {initialized['directory']}")
+                print("")
+                for path in initialized["files"]:
+                    print(f"  create {path}")
+                print("")
+                print("Next: cd into the project and run `claimpilot test`.")
+        elif args.command == "test":
+            result = run_project(args.config, args.out, args.allow_skipped)
+            if args.json:
+                print(json.dumps(result, ensure_ascii=False, indent=2))
+            else:
+                gate_label = "PASS" if result["quality_gate"]["ok"] else "FAIL"
+                print(f"Project: {result['project']}")
+                print(f"Cases:   {result['total_cases']}")
+                print(f"Dataset: {result['dataset_sha256']}")
+                print("")
+                print("Profile                  Avg Score  Pass Rate  Status")
+                print("------------------------ ---------- ---------- --------")
+                for item in result["profiles"]:
+                    average = "-" if item["average_score"] is None else f"{item['average_score']}%"
+                    pass_rate = "-" if item["pass_rate"] is None else f"{item['pass_rate']}%"
+                    print(f"{item['display_name'][:24]:<24} {average:>10} {pass_rate:>10} {item['status']}")
+                print("")
+                print(f"Quality gate: {gate_label}")
+                for failure in result["quality_gate"]["failures"]:
+                    print(f"- {failure['profile']}: {'; '.join(failure['reasons'])}")
+                print(f"Report:       {result['artifacts']['report']}")
+                print(f"Scorecard:    {result['artifacts']['scorecard']}")
+                print(f"Share text:   {result['artifacts']['scorecard_markdown']}")
+                print(f"Submission:   {result['artifacts']['submission']}")
+                print(f"Results JSON: {result['results_file']}")
+            if not result["quality_gate"]["ok"]:
+                raise SystemExit(1)
+        elif args.command == "scorecard":
+            artifacts = render_scorecard_from_results(args.results, args.out, args.profile)
+            if args.json:
+                print(json.dumps(artifacts, ensure_ascii=False, indent=2))
+            else:
+                print("Generated ClaimPilot sharing artifacts:")
+                for name, path in artifacts.items():
+                    print(f"  {name}: {path}")
+        elif args.command == "community":
+            if args.check:
+                community = validate_submissions(args.path)
+            else:
+                community = build_community_leaderboard(args.path, args.out)
+                community["ok"] = True
+            if args.json:
+                print(json.dumps(community, ensure_ascii=False, indent=2))
+            elif args.check:
+                for item in community["results"]:
+                    print(f"{'PASS' if item['ok'] else 'FAIL'} {item['path']}")
+                    for error in item["errors"]:
+                        print(f"  - {error}")
+                print(f"Validated {community['total']} submission(s): {community['passed']} passed, {community['failed']} failed")
+            else:
+                print(f"Built leaderboard from {community['submissions']} submission(s): {community['leaderboard']}")
+            if not community["ok"]:
+                raise SystemExit(1)
+        elif args.command == "run":
             result = run_case(
                 args.case,
                 args.agent,

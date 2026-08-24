@@ -116,7 +116,8 @@ def build_community_leaderboard(
     )
     destination = Path(output_path)
     destination.parent.mkdir(parents=True, exist_ok=True)
-    destination.write_text("\n".join(lines), encoding="utf-8")
+    with destination.open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write("\n".join(lines))
     return {"submissions": len(submissions), "leaderboard": str(destination)}
 
 
